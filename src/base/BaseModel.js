@@ -1,175 +1,116 @@
-import mongoose from 'mongoose';
-import { hashPassword } from '../services/encryptionService.js';
-import { ValidationError, NotFoundError, BadRequestError, InternalServerError } from '../utils/errors.js';
-import { validateData, validatePassword, validatePhoneNumber, generateFieldLabel } from '../utils/validateModels.js';
+import { Model, DataTypes } from 'sequelize';
+import sequelize from '../config/db.js'; // Adjust the import based on your project structure
 
-class BaseModel {
-    constructor(modelName, schemaDefinition, options = {}) {
-        // Define schema with options
-        this.schema = new mongoose.Schema(schemaDefinition, {
-            timestamps: true,
-            ...options.schemaOptions,
-        });
-
-        // Create Mongoose model
-        this.model = mongoose.models[modelName] || mongoose.model(modelName, this.schema);
-    }
-
-    // Check if a field value is unique
-    async isUnique(field, value) {
+class BaseModel extends Model {
+    // Method to create a record
+    static async createRecord(data, options = {}) {
         try {
-            const existing = await this.model.findOne({ [field]: value }).exec();
-            return !existing;
+            const record = await this.create(data, options);
+            return record;
         } catch (error) {
-            throw new InternalServerError(`Error checking uniqueness of ${generateFieldLabel(field)}: ${error.message}`);
+            throw error;
         }
     }
 
-    // Validate data against schema
-    async validate(data) {
+    // Method to find all records
+    static async findAllRecords(query, options = {}) {
         try {
-            const validationErrors = await validateData(this.schema.obj, data, this.isUnique.bind(this));
-
-            if (validationErrors.length) {
-                const formattedErrors = validationErrors.map(err => err);
-                throw new ValidationError(`Validation failed: ${formattedErrors.join(', ')}`);
-            }
+            const records = await this.findAll({ where: query, ...options });
+            return records;
         } catch (error) {
-            if (error instanceof ValidationError) {
-                throw error;
-            }
-            throw new InternalServerError(`Error during validation: ${error.message}`);
+            throw error;
         }
     }
 
-    async preprocessData(data) {
-        if (data.password) {
-            validatePassword(data.password);
-            data.password = await hashPassword(data.password);
-        }
-        if (data.phoneNo) {
-            validatePhoneNumber(data.phoneNo);
-        }
-        // Additional preprocessing can be added here
-        return data;
-    }
-
-    // Create a new document
-    // Create a new document
-    async create(data) {
+    // Method to find a single record
+    static async findOneRecord(query, options = {}) {
         try {
-            // Validate the data before creating the document
-            await this.validate(data);
-            // Preprocess the data before creating the document
-            await this.preprocessData(data);
-            // Create the document
-            await this.model.create(data);
-            return { message: 'Document created successfully' };
+            const record = await this.findOne({ where: query, ...options });
+            return record;
         } catch (error) {
-            if (error.name === 'MongoServerError' && error.code === 11000) {
-                const duplicateKeys = Object.keys(error.keyPattern); // Extract all fields causing the duplicate key error
-                const messages = duplicateKeys.map(key => `${generateFieldLabel(key)}`).join(' with ');
-                throw new ValidationError(`Validation failed: ${messages} already exists`);
-            }
-
-            if (error instanceof ValidationError || error instanceof NotFoundError || error instanceof BadRequestError) {
-                throw error;
-            }
-
-            throw new InternalServerError(`Error creating document: ${error.message}`);
+            throw error;
         }
     }
 
-
-    // Find documents with query and pagination
-    async find(query = {}, options = {}) {
+    // Method to update a record
+    static async updateRecord(id, data, options = {}) {
         try {
-            const { limit = 25, skip = 0 } = options;
-            const documents = await this.model.find(query).limit(limit).skip(skip).exec();
-            return documents;
+            const [updated] = await this.update(data, {
+                where: { id },
+                ...options
+            });
+            return updated;
         } catch (error) {
-            throw new InternalServerError(`Error finding documents: ${error.message}`);
+            throw error;
         }
     }
 
-    // Find a single document by query
-    async findOne(query) {
+    // Method to delete a record
+    static async deleteRecord(id, options = {}) {
         try {
-            const document = await this.model.findOne(query).exec();
-            return document; // Return null if not found
+            const deleted = await this.destroy({
+                where: { id },
+                ...options
+            });
+            return deleted;
         } catch (error) {
-            throw new InternalServerError(`Error finding document: ${error.message}`);
+            throw error;
         }
     }
 
-    // Find a document by ID
-    async findById(id) {
+    // Method to create a record within a transaction
+    static async createWithTransaction(data, transaction) {
         try {
-            if (!mongoose.Types.ObjectId.isValid(id)) {
-                throw new BadRequestError('Invalid ID format');
-            }
-            const document = await this.model.findById(id).exec();
-            return document; // Return null if not found
+            const record = await this.create(data, { transaction });
+            return record;
         } catch (error) {
-            if (error instanceof BadRequestError) {
-                throw error;
-            }
-            throw new InternalServerError(`Error finding document by ID: ${error.message}`);
+            throw error;
         }
     }
 
-    // Update a document by ID
-    async update(id, updateData) {
+    // Method to find all records within a transaction
+    static async findAllWithTransaction(query, options = {}, transaction) {
         try {
-            if (!mongoose.Types.ObjectId.isValid(id)) {
-                throw new BadRequestError('Invalid ID format');
-            }
-
-            // Preprocess data before updating
-            const processedUpdateData = await this.preprocessData(updateData);
-
-            // Attempt to update the document
-            const updatedDocument = await this.model.findByIdAndUpdate(id, processedUpdateData, { new: true, runValidators: true }).exec();
-
-            if (!updatedDocument) {
-                throw new NotFoundError('Document not found');
-            }
-
-            return { message: 'Document updated successfully' };
+            const records = await this.findAll({ where: query, ...options, transaction });
+            return records;
         } catch (error) {
-            if (error.name === 'MongoServerError' && error.code === 11000) {
-                const duplicateKeys = Object.keys(error.keyPattern); // Extract all fields causing the duplicate key error
-                const messages = duplicateKeys.map(key => `${generateFieldLabel(key)}`).join(' with ');
-                throw new ValidationError(`Validation failed: ${messages} already exists`);
-            }
-            // Handle other specific errors
-            if (error instanceof ValidationError || error instanceof NotFoundError || error instanceof BadRequestError) {
-                throw error;
-            }
-            // General error handling
-            throw new InternalServerError(`Error updating document: ${error.message}`);
+            throw error;
         }
     }
 
-
-    // Delete a document by ID
-    async delete(id) {
+    // Method to find one record within a transaction
+    static async findOneWithTransaction(query, options = {}, transaction) {
         try {
-            if (!mongoose.Types.ObjectId.isValid(id)) {
-                throw new BadRequestError('Invalid ID format');
-            }
-            const result = await this.model.findByIdAndDelete(id).exec();
-
-            if (!result) {
-                throw new NotFoundError('Document not found');
-            }
-
-            return { message: 'Document deleted successfully' };
+            const record = await this.findOne({ where: query, ...options, transaction });
+            return record;
         } catch (error) {
-            if (error instanceof NotFoundError || error instanceof BadRequestError) {
-                throw error;
-            }
-            throw new InternalServerError(`Error deleting document: ${error.message}`);
+            throw error;
+        }
+    }
+
+    // Method to update a record within a transaction
+    static async updateWithTransaction(id, data, transaction) {
+        try {
+            const [updated] = await this.update(data, {
+                where: { id },
+                transaction
+            });
+            return updated;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    // Method to delete a record within a transaction
+    static async deleteWithTransaction(id, transaction) {
+        try {
+            const deleted = await this.destroy({
+                where: { id },
+                transaction
+            });
+            return deleted;
+        } catch (error) {
+            throw error;
         }
     }
 }
