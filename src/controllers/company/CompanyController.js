@@ -35,7 +35,7 @@ class CompanyController extends BaseController {
 
     findById = async (req, res) => {
         try {
-            if (req.params.id) {
+            if (!req.params.id) {
                 throw new BadRequestError("Please enter Id");
             }
             

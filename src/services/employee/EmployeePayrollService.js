@@ -5,16 +5,18 @@ import AdvanceLedger from '../../models/ledger/AdvanceLedger.js';
 import BaseService from '../../base/BaseService.js';
 import { BadRequestError } from '../../utils/errors.js';
 import { withTransaction } from '../../utils/transactionHelper.js';
+import SalaryLedgerService from '../ledger/SalaryLedgerService.js';
+import EmployeeLedger from '../../models/ledger/EmployeeLedger.js';
 
 class EmployeePayrollService extends BaseService {
     constructor() {
-        super(EmployeePayroll);
+        super(EmployeePayroll, 'employee_payroll_id');
     }
 
     createPayroll = async (data) => {
         const {
             employee_id, hours_worked, overtime_hours, tax_deductions,
-            other_deductions, advance_deductions, pay_period, overtime_rate, company_id, direct_salary
+            other_deductions, advance_deductions, pay_period, overtime_rate, company_id, direct_salary, payment_mode
         } = data;
 
         if (!employee_id || !pay_period || !company_id) {
@@ -23,7 +25,7 @@ class EmployeePayrollService extends BaseService {
 
         return withTransaction(async (transaction) => {
             const employee = await Employee.findOne({
-                where: { id: employee_id },
+                where: { emp_id: employee_id },
                 transaction
             });
 
@@ -57,7 +59,7 @@ class EmployeePayrollService extends BaseService {
                 employee, hours_worked, overtime_hours, tax_deductions, other_deductions, advance_deductions, pay_period, overtime_rate, direct_salary
             );
 
-            const payroll = await this.model.create({
+            const payroll = await this.create({
                 employee_id,
                 base_salary: employee.salary,
                 hours_worked,
@@ -69,16 +71,28 @@ class EmployeePayrollService extends BaseService {
                 net_pay,
                 payment_status: 'Pending',
                 pay_period,
-                company_id
+                company_id,
+                payment_mode
             }, { transaction });
 
-            return payroll;
+            const salaryLedger = await SalaryLedgerService.createSalaryLedger({
+                payroll_id: payroll.employee_payroll_id,
+                company_id: payroll.company_id,
+                date: payroll.date,
+                payment_mode: payroll.payment_mode,
+                amount: total_earnings
+            });
+
+            const employeeLedger = await EmployeeLedgerSe
+
+            return { payroll, ledgerService };
+
         });
     }
 
     updatePayroll = async (id, data) => {
         const {
-            employee_id, hours_worked, overtime_hours, tax_deductions, other_deductions, advance_deductions, pay_period, overtime_rate, direct_salary
+            employee_id, hours_worked, overtime_hours, tax_deductions, other_deductions, advance_deductions, pay_period, overtime_rate, direct_salary, payment_mode
         } = data;
 
         return withTransaction(async (transaction) => {
@@ -146,33 +160,39 @@ class EmployeePayrollService extends BaseService {
         return this.model.findAll({ where: { company_id } });
     }
 
-    calculatePayroll(employee, hours_worked, overtime_hours, tax_deductions = 0, other_deductions = 0, advance_deductions = 0, pay_period = 'monthly', overtime_rate, direct_salary) {
+    calculatePayroll(employee, hours_worked, overtime_hours, tax_deductions = 0, other_deductions = 0, advance_deductions = 0, pay_period = 'monthly', overtime_rate = 0, direct_salary = 0) {
         const validPeriods = ['weekly', 'bi-weekly', 'monthly'];
         if (!validPeriods.includes(pay_period)) {
-            pay_period = 'monthly';
+            pay_period = 'monthly'; // Default to monthly if an invalid period is provided
         }
 
-        if (direct_salary) {
+        if (direct_salary > 0) {
+            // If direct_salary is provided, use it directly
             const total_earnings = direct_salary;
             const net_pay = direct_salary - (tax_deductions + other_deductions + advance_deductions);
             return { total_earnings, net_pay };
         }
 
-        let hourly_rate = employee.hourly_rate;
+        const hourly_rate = employee.hourly_rate;
         let total_earnings = 0;
 
-        let total_hours = hours_worked + overtime_hours;
-
+        // Calculate earnings based on pay period
         switch (pay_period) {
             case 'weekly':
+                total_earnings = ((hourly_rate * hours_worked) + (overtime_rate * overtime_hours)) * 7;
+                break;
             case 'bi-weekly':
-                total_earnings = (hourly_rate * total_hours) + (overtime_rate * overtime_hours);
+                total_earnings = (hourly_rate * hours_worked * 2) + (overtime_rate * overtime_hours * 2);
                 break;
             case 'monthly':
-                total_earnings = (hourly_rate * total_hours) + (overtime_rate * overtime_hours);
+                // Assuming 4.33 weeks per month for calculation purposes
+                const hours_per_month = hours_worked * 7 * 4.33;
+                const overtime_per_month = overtime_hours;
+                total_earnings = (hourly_rate * hours_per_month) + (overtime_rate * overtime_per_month);
                 break;
         }
 
+        // Calculate net pay after deductions
         const net_pay = total_earnings - (tax_deductions + other_deductions + advance_deductions);
 
         return { total_earnings, net_pay };

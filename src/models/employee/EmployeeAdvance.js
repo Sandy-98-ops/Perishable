@@ -11,7 +11,7 @@ EmployeeAdvance.init({
         type: DataTypes.INTEGER,
         references: {
             model: Employee,
-            key: 'id',
+            key: 'emp_id',
         },
         allowNull: false,
     },
@@ -19,7 +19,7 @@ EmployeeAdvance.init({
         type: DataTypes.INTEGER,
         references: {
             model: Company,
-            key: 'id',
+            key: 'company_id',
         },
         allowNull: true,
     },

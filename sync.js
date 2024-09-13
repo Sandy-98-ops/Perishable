@@ -1,7 +1,7 @@
 // sync.js
 import sequelize from './src/config/db.js';
 
-import Counter from './src/models/utils/Counter.js';
+import Counter from './src/utils/Counter.js';
 import User from './src/models/user/User.js';
 import Employee from './src/models/employee/Employee.js';
 
@@ -19,6 +19,10 @@ import CashLedger from './src/models/ledger/CashLedger.js';
 import ExpenseLedger from './src/models/ledger/ExpenseLedger.js';
 import AdvanceLedger from './src/models/ledger/AdvanceLedger.js';
 import SalaryLedger from './src/models/ledger/SalaryLedger.js';
+import ItemCategory from './src/models/master/ItemCategory.js';
+import UnitMaster from './src/models/master/UnitMaster.js';
+import Batch from './src/models/transaction/Batch.js';
+import Item from './src/models/transaction/Item.js';
 
 (async () => {
     try {

@@ -1,6 +1,6 @@
 import BaseService from '../../base/BaseService.js';
 import BankLedger from '../../models/ledger/BankLedger.js';
-import Counter from '../../models/utils/Counter.js';
+import Counter from '../../utils/Counter.js';
 import { InternalServerError } from '../../utils/errors.js';
 import { withTransaction } from '../../utils/transactionHelper.js';
 

@@ -2,6 +2,27 @@ import { ValidationError, NotFoundError, BadRequestError, ConflictError, Unautho
 import { withTransaction } from '../utils/transactionHelper.js';
 
 class BaseController {
+    // Define abstract methods
+    create = async (req, res) => {
+        throw new NotImplementedError("Method 'create' must be implemented.");
+    }
+
+    findById = async (req, res) => {
+        throw new NotImplementedError("Method 'findById' must be implemented.");
+    }
+
+    findAll = async (req, res) => {
+        throw new NotImplementedError("Method 'findAll' must be implemented.");
+    }
+
+    update = async (req, res) => {
+        throw new NotImplementedError("Method 'update' must be implemented.");
+    }
+
+    delete = async (req, res) => {
+        throw new NotImplementedError("Method 'delete' must be implemented.");
+    }
+
     // Generic error handler
     handleError = (res, error) => {
         let statusCode = 500; // Default to Internal Server Error

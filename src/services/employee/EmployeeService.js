@@ -1,10 +1,14 @@
 import { Op } from 'sequelize';
 import Employee from '../../models/employee/Employee.js';
-import Counter from '../../models/utils/Counter.js';
+import Counter from '../../utils/Counter.js';
 import { BadRequestError, ConflictError, InternalServerError, NotFoundError } from '../../utils/errors.js';
 import { withTransaction } from '../../utils/transactionHelper.js';
+import BaseService from '../../base/BaseService.js';
 
-class EmployeeService {
+class EmployeeService extends BaseService {
+    constructor() {
+        super(Employee, 'emp_id');
+    }
     // Method to generate unique transaction ID
     generateUniqueTransactionId = async (companyId, transaction) => {
         try {
@@ -83,7 +87,7 @@ class EmployeeService {
         }
 
         return withTransaction(async (transaction) => {
-            const employee = await Employee.findByPk(id, { transaction });
+            const employee = await this.findByPk(id, { transaction });
 
             if (!employee) {
                 throw new NotFoundError('Employee not found');
@@ -99,9 +103,9 @@ class EmployeeService {
             throw new BadRequestError('Company ID is required');
         }
 
-        return Employee.findAll({
-            where: { company_id: companyId }
-        });
+        return this.findAll(
+            { company_id: companyId }
+        );
     }
 }
 

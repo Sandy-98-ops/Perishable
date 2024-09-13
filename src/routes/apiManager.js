@@ -11,6 +11,11 @@ import employeePayrollRouter from '../routers/employee/EmployeePayrollRouter.js'
 import employeeRouter from '../routers/employee/EmployeeRouter.js';
 import expenseCategoryRouter from '../routers/expense/ExpenseCategoryRouter.js';
 import expenseEntryRouter from '../routers/expense/ExpenseEntryRouter.js';
+import expenseLedgerRouter from '../routers/ledger/ExpenseLedgerRouter.js';
+import itemCategoryRouter from '../routers/master/ItemCategoryRouter.js';
+import unitMasterRouter from '../routers/master/UnitMasterRouter.js';
+import batchRouter from '../routers/transaction/BatchRouter.js';
+import itemRouter from '../routers/transaction/ItemRouter.js';
 
 
 const apiRouter = express.Router();
@@ -19,7 +24,8 @@ const apiRouter = express.Router();
 apiRouter.use((req, res, next) => {
     const validEndpoints = ['/user', '/party',
         '/company', '/ledger', '/ledgerCategory', '/ledgerMaster', '/employee', '/expenseCategory', '/expenseEntry',
-        '/employeeAdvance', '/employeeAttendance', '/employeePayroll',
+        '/employeeAdvance', '/employeeAttendance', '/employeePayroll', '/expenseLedger', '/itemCategory', '/unitMaster',
+        '/batch', '/item'
     ];
 
     // Check if the request path starts with one of the valid base paths
@@ -46,5 +52,10 @@ apiRouter.use('/employeePayroll', employeePayrollRouter);
 apiRouter.use('/employee', employeeRouter);
 apiRouter.use('/expenseCategory', expenseCategoryRouter);
 apiRouter.use('/expenseEntry', expenseEntryRouter);
+apiRouter.use('/expenseLedger', expenseLedgerRouter);
+apiRouter.use('/itemCategory', itemCategoryRouter);
+apiRouter.use("/unitMaster", unitMasterRouter);
+apiRouter.use("/batch", batchRouter);
+apiRouter.use("/item", itemRouter);
 
 export default apiRouter;

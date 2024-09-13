@@ -42,7 +42,7 @@ class EmployeeController extends BaseController {
                 throw new BadRequestError('ID is required');
             }
 
-            const employee = await EmployeeService.findEmployeeById(id);
+            const employee = await EmployeeService.findById(id);
             if (!employee) {
                 throw new NotFoundError('Employee not found');
             }

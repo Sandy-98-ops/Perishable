@@ -7,11 +7,17 @@ import PAYMENT_MODES from '../../constants/paymentModes.js';
 class EmployeePayroll extends Model { }
 
 EmployeePayroll.init({
+    employee_payroll_id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+        allowNull: false
+    },
     employee_id: {
         type: DataTypes.INTEGER,
         references: {
             model: Employee,
-            key: 'id',
+            key: 'emp_id',
         },
         allowNull: false,
     },
@@ -59,7 +65,7 @@ EmployeePayroll.init({
         type: DataTypes.INTEGER,
         references: {
             model: Company,
-            key: 'id',
+            key: 'company_id',
         },
         allowNull: false,
     },
@@ -69,10 +75,15 @@ EmployeePayroll.init({
         validate: {
             isIn: [PAYMENT_MODES], // Ensures only valid payment modes are accepted
         },
+    },
+    date: {
+        type: DataTypes.DATE,
+        allowNull: false
     }
 }, {
     sequelize,
     modelName: 'Employee_Payroll',
+    tableName: "employee_payroll",
     timestamps: true,
 });
 

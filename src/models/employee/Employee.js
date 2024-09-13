@@ -8,6 +8,12 @@ const SALT_ROUNDS = 10; // Define your salt rounds here or import from config
 class Employee extends Model { }
 
 Employee.init({
+    emp_id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+        allowNull: false
+    },
     first_name: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -20,7 +26,7 @@ Employee.init({
         type: DataTypes.INTEGER,
         references: {
             model: Company,
-            key: 'id',
+            key: 'company_id',
         },
         allowNull: true,
     },

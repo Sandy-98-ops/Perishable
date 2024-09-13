@@ -1,6 +1,6 @@
 import BaseService from "../../base/BaseService.js";
 import Party from "../../models/party/Party.js";
-import Counter from "../../models/utils/Counter.js";
+import Counter from "../../utils/Counter.js";
 import Ledger from "../../models/ledger/Ledger.js";
 import LedgerService from "../ledger/LedgerService.js";
 import { InternalServerError, BadRequestError } from "../../utils/errors.js";

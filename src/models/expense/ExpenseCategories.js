@@ -5,11 +5,17 @@ import Company from '../company/Company.js';
 class ExpenseCategory extends Model { }
 
 ExpenseCategory.init({
+    expense_category_id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+        allowNull: false
+    },
     company_id: {
         type: DataTypes.INTEGER,
         references: {
             model: Company, // Name of the table for Company model
-            key: 'id',
+            key: 'company_id',
         },
         allowNull: true,
     },

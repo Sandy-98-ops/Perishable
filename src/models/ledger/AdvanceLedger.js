@@ -1,19 +1,28 @@
-import { DataTypes, Model } from 'sequelize';
+// models/ledger/AdvanceLedger.js
+import { DataTypes } from 'sequelize';
 import sequelize from '../../config/db.js';
 import PAYMENT_MODES from '../../constants/paymentModes.js'; // Ensure this is an array of strings
 import Company from '../company/Company.js';
-import ExpenseCategory from '../expense/ExpenseCategories.js';
 import ExpenseEntry from '../expense/ExpenseEntry.js';
+import Employee from '../employee/Employee.js';
 
-class AdvanceLedger extends Model { }
-
-AdvanceLedger.init({
+const AdvanceLedger = sequelize.define('AdvanceLedger', {
     company_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
             model: Company,
-            key: 'id',
+            key: 'company_id',
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+    },
+    employee_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: Employee,
+            key: 'emp_id',
         },
     },
     advance_id: {
@@ -22,7 +31,9 @@ AdvanceLedger.init({
         references: {
             model: ExpenseEntry,
             key: 'id',
-        }
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
     },
     date: {
         type: DataTypes.DATE,
@@ -34,6 +45,7 @@ AdvanceLedger.init({
     },
     transaction_id: {
         type: DataTypes.STRING,
+        allowNull: true,
         trim: true,
     },
     payment_mode: {
@@ -55,10 +67,18 @@ AdvanceLedger.init({
         type: DataTypes.FLOAT,
         defaultValue: 0,
     },
+    createdAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
+    },
+    updatedAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
+    },
 }, {
-    sequelize,
-    modelName: 'Advance_Ledger',
-    timestamps: true,
+    tableName: 'Advance_Ledgers', // Explicitly set table name if different from modelName
+    timestamps: true, // Automatically manage createdAt and updatedAt
 });
 
-export default AdvanceLedger; // Export the model itself
+
+export default AdvanceLedger;

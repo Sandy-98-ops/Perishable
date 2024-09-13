@@ -10,6 +10,6 @@ employeeRouter.get('/:id', EmployeeController.findById); // Read a specific user
 employeeRouter.put('/:id', EmployeeController.update); // Update a specific user
 employeeRouter.delete('/:id', EmployeeController.delete); // Delete a specific user
 
-employeeRouter.get('/findByCompany/:company', EmployeeController.findByCompany);
+employeeRouter.get('/findByCompany/:company_id', EmployeeController.findByCompany);
 
 export default employeeRouter;

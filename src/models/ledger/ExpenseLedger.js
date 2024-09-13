@@ -1,19 +1,18 @@
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes } from 'sequelize';
 import sequelize from '../../config/db.js';
-import PAYMENT_MODES from '../../constants/paymentModes.js'; // Ensure this is an array of strings
-import Company from '../company/Company.js';
 import ExpenseCategory from '../expense/ExpenseCategories.js';
 import ExpenseEntry from '../expense/ExpenseEntry.js';
+import Company from '../company/Company.js';
+import PAYMENT_MODES from '../../constants/paymentModes.js';
 
-class ExpenseLedger extends Model { }
-
-ExpenseLedger.init({
+// Define the ExpenseLedger model
+const ExpenseLedger = sequelize.define('ExpenseLedger', {
     company_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
             model: Company,
-            key: 'id',
+            key: 'company_id',
         },
     },
     expense_id: {
@@ -29,7 +28,7 @@ ExpenseLedger.init({
         allowNull: false,
         references: {
             model: ExpenseCategory,
-            key: 'id',
+            key: 'expense_category_id',
         },
     },
     date: {
@@ -37,7 +36,7 @@ ExpenseLedger.init({
         allowNull: false,
     },
     description: {
-        type: DataTypes.STRING, // Changed to STRING if JSON is not necessary
+        type: DataTypes.STRING,
         allowNull: false,
     },
     transaction_id: {
@@ -53,20 +52,20 @@ ExpenseLedger.init({
     },
     credit: {
         type: DataTypes.FLOAT,
-        defaultValue: 0,
+        defaultValue: 0.0
     },
     debit: {
         type: DataTypes.FLOAT,
-        defaultValue: 0,
+        defaultValue: 0.0
     },
     balance: {
         type: DataTypes.FLOAT,
-        defaultValue: 0,
+        defaultValue: 0.0
     },
 }, {
     sequelize,
-    modelName: 'Expense_Ledger',
+    tableName: 'Expense_Ledgers',
     timestamps: true,
 });
 
-export default ExpenseLedger; // Export the model itself
+export default ExpenseLedger;

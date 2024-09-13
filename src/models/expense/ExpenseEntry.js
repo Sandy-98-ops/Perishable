@@ -12,7 +12,7 @@ ExpenseEntry.init({
         type: DataTypes.INTEGER,
         references: {
             model: Employee, // Name of the table for Employee model
-            key: 'id',
+            key: 'emp_id',
         },
         allowNull: false,
     },
@@ -20,7 +20,7 @@ ExpenseEntry.init({
         type: DataTypes.INTEGER,
         references: {
             model: Company, // Name of the table for Company model
-            key: 'id',
+            key: 'company_id',
         },
         allowNull: true,
     },
@@ -28,7 +28,7 @@ ExpenseEntry.init({
         type: DataTypes.INTEGER,
         references: {
             model: ExpenseCategory, // Name of the table for ExpenseCategories model
-            key: 'id',
+            key: 'expense_category_id',
         },
         allowNull: false,
     },
@@ -63,7 +63,7 @@ ExpenseEntry.init({
         type: DataTypes.INTEGER,
         references: {
             model: Employee, // Name of the table for Employee model
-            key: 'id',
+            key: 'emp_id',
         },
         allowNull: false,
     }

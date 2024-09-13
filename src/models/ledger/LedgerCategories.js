@@ -1,23 +1,23 @@
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes } from 'sequelize';
 import sequelize from '../../config/db.js';
 import Company from '../company/Company.js';
-// Define the LedgerCategory model
-class LedgerCategory extends Model { }
+import LedgerMaster from './LedgerMaster.js'; // Ensure path is correct
 
-LedgerCategory.init({
-    company: {
+// Define the LedgerCategory model
+const LedgerCategory = sequelize.define('LedgerCategory', {
+    company_id: {  // Use underscores for column names
         type: DataTypes.INTEGER,
         references: {
-            model: Company, // Ensure this matches the name of your Company model
-            key: 'id',
+            model: Company,
+            key: 'company_id',
         },
     },
-    category_name: {
+    category_name: {  // Use underscores for column names
         type: DataTypes.STRING,
         allowNull: false,
-        unique: 'company_categoryName_unique', // Unique constraint for the combination of company and categoryName
+        unique: 'company_category_name_unique', // Unique constraint for the combination of company and category_name
         validate: {
-            len: [5, Infinity], // Ensure categoryName has at least 5 characters
+            len: [5, Infinity],  // Ensure category_name has at least 5 characters
         },
     },
     description: {
@@ -25,21 +25,21 @@ LedgerCategory.init({
     },
     referance_id: {
         type: DataTypes.INTEGER,
-        references: {
-            model: LedgerCategory, // Ensure this matches the name of the LedgerCategories model
-            key: 'id',
-        },
     },
     status: {
         type: DataTypes.STRING,
     },
+    ledger_master_id: {  // Foreign key pointing to LedgerMaster
+        type: DataTypes.INTEGER,
+        references: {
+            model: LedgerMaster,
+            key: 'id',
+        },
+    },
 }, {
     sequelize,
-    modelName: 'Ledger_Category',
-    timestamps: true, // Set to true if you want createdAt and updatedAt fields
+    tableName: 'ledger_categories',  // Use underscores for table name
+    timestamps: true,
 });
-
-LedgerCategory.belongsTo(Company, { foreignKey: 'company' });
-LedgerCategory.belongsTo(LedgerCategory, { as: 'Referance', foreignKey: 'referanceId' });
 
 export default LedgerCategory;

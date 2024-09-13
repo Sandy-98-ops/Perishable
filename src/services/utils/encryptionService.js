@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import { ValidationError } from '../utils/errors.js';
+import { ValidationError } from '../../utils/errors.js';
 
 // Hashes a plaintext password and returns the hashed version
 export const hashPassword = async (password) => {

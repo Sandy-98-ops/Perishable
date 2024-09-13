@@ -1,10 +1,13 @@
 import BaseService from '../../base/BaseService.js';
 import CashLedger from '../../models/ledger/CashLedger.js';
-import Counter from '../../models/utils/Counter.js';
+import Counter from '../../utils/Counter.js';
 import { InternalServerError } from '../../utils/errors.js';
 import { withTransaction } from '../../utils/transactionHelper.js';
 
 class CashLedgerService extends BaseService {
+    constructor() {
+        super(CashLedger)
+    }
     // Method to generate unique transaction ID
     generateUniqueTransactionId = async (company_id, transaction) => {
         try {

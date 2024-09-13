@@ -1,6 +1,6 @@
 import BaseService from "../../base/BaseService.js";
 import SalaryLedger from "../../models/ledger/SalaryLedger.js";
-import Counter from "../../models/utils/Counter.js";
+import Counter from "../../utils/Counter.js";
 import CashLedgerService from "./CashLedgerService.js";
 import BankLedgerService from "./BankLedgerService.js";
 import { InternalServerError, BadRequestError } from "../../utils/errors.js";
@@ -8,7 +8,7 @@ import { withTransaction } from "../../utils/transactionHelper.js";
 
 class SalaryLedgerService extends BaseService {
     constructor() {
-        super(SalaryLedger);
+        super(SalaryLedger, 'salary_Ledger_id');
     }
 
     // Method to generate unique transaction ID
@@ -67,9 +67,13 @@ class SalaryLedgerService extends BaseService {
 
             const uniqueTransactionId = await this.generateUniqueTransactionId(company_id, transaction);
 
-            const salaryLedger = await this.model.create({
+            const salaryLedger = await this.create({
+                employee_payroll_id: salaryEntry.payroll_id,
                 company_id,
                 transaction_id: uniqueTransactionId,
+                description: "Salary",
+                date: salaryEntry.date,
+                payment_mode: salaryEntry.payment_mode,
                 balance: newBalance,
                 debit: 0,
                 credit: amount,

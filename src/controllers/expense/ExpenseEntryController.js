@@ -84,7 +84,7 @@ class ExpenseEntryController extends BaseController {
                 throw new BadRequestError('Invalid data provided');
             }
 
-            const result = await ExpenseEntryService.update(id, req.body);
+            const result = await ExpenseEntryService.updateExpenseEntry(id, req.body);
             if (!result) {
                 throw new NotFoundError('Expense entry not found');
             }

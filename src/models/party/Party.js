@@ -11,7 +11,7 @@ Party.init({
         allowNull: false,
         references: {
             model: Company,
-            key: 'id',
+            key: 'company_id',
         },
     },
     name: {

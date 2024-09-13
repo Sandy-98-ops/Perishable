@@ -13,7 +13,7 @@ Ledger.init({
         allowNull: true,
         references: {
             model: Company, // Name of the table for Company model
-            key: 'id',
+            key: 'company_id',
         },
     },
     party_id: {

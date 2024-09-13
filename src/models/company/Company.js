@@ -5,7 +5,7 @@ import sequelize from '../../config/db.js';
 const SALT_ROUNDS = 10; // Number of salt rounds for hashing
 
 const Company = sequelize.define('Company', {
-    id: {
+    company_id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true,

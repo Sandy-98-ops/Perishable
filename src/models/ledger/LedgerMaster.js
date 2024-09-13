@@ -1,33 +1,15 @@
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes } from 'sequelize';
 import sequelize from '../../config/db.js';
-import LedgerCategory from './LedgerCategories.js';
 import Company from '../company/Company.js';
-// Define the LedgerMaster model
-class LedgerMaster extends Model { }
 
-LedgerMaster.init({
-    ledgerCategory: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: LedgerCategory, // This should match the name of the LedgerCategories model
-            key: 'id',
-        },
-    },
-    company: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: Company, // This should match the name of the Company model
-            key: 'id',
-        },
-    },
-    ledgerName: {
+// Define the LedgerMaster model
+const LedgerMaster = sequelize.define('LedgerMaster', {
+    ledger_name: {  // Use underscores for column names
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
         validate: {
-            len: [4, Infinity], // Ensure ledgerName has at least 4 characters
+            len: [4, Infinity],  // Ensure ledger_name has at least 4 characters
         },
     },
     code: {
@@ -35,7 +17,7 @@ LedgerMaster.init({
         allowNull: false,
         unique: true,
         validate: {
-            len: [5, Infinity], // Ensure code has at least 5 characters
+            len: [5, Infinity],  // Ensure code has at least 5 characters
         },
     },
     status: {
@@ -43,13 +25,11 @@ LedgerMaster.init({
     },
 }, {
     sequelize,
-    modelName: 'Ledger_Master',
-    timestamps: true, // or true if you want createdAt and updatedAt fields
+    tableName: 'ledger_masters',  // Use underscores for table name
+    timestamps: true,
 });
 
 // Define associations
-
-LedgerMaster.belongsTo(LedgerCategory, { foreignKey: 'ledgerCategory' });
-LedgerMaster.belongsTo(Company, { foreignKey: 'company' });
+LedgerMaster.belongsTo(Company, { foreignKey: 'company_id' });
 
 export default LedgerMaster;

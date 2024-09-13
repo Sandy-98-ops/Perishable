@@ -1,11 +1,22 @@
 import { DataTypes, Model } from 'sequelize';
-import sequelize from '../../config/db.js';
+import sequelize from '../config/db.js';
+import Company from '../models/company/Company.js';
 
 class Counter extends Model { }
 
 Counter.init({
+    counter_id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+        allowNull: false
+    },
     company_id: {
-        type: DataTypes.INTEGER, // Adjust type based on your actual ID type (INTEGER, BIGINT, etc.)
+        type: DataTypes.INTEGER,
+        references: {
+            model: Company,
+            key: 'company_id'
+        },
         allowNull: true,
     },
     sequence_type: {

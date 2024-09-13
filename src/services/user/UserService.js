@@ -1,5 +1,5 @@
 import User from "../../models/user/User.js";
-import { comparePassword, hashPassword } from "../../services/encryptionService.js";
+import { comparePassword, hashPassword } from "../utils/encryptionService.js";
 import { validatePassword } from "../../utils/validateModels.js";
 import { BadRequestError, NotFoundError } from "../../utils/errors.js";
 import jwt from 'jsonwebtoken';

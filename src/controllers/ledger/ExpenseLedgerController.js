@@ -14,7 +14,7 @@ class ExpenseLedgerController extends BaseController {
                 throw new BadRequestError('Invalid data provided');
             }
 
-            const result = await ExpenseLedgerService.createExpenseLedger(req.body);
+            const result = await ExpenseLedgerService.create(req.body);
             this.handleSuccess(res, 201, result);
         } catch (error) {
             console.error('Error creating expense ledger:', error);

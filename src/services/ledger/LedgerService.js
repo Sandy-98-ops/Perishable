@@ -1,7 +1,7 @@
 import BaseService from "../../base/BaseService.js";
 import PAYMENT_MODES from "../../constants/paymentModes.js";
 import Ledger from "../../models/ledger/Ledger.js";
-import Counter from "../../models/utils/Counter.js";
+import Counter from "../../utils/Counter.js";
 import { BadRequestError, InternalServerError, NotFoundError } from "../../utils/errors.js";
 import { withTransaction } from "../../utils/transactionHelper.js";
 

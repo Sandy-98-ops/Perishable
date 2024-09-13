@@ -6,7 +6,7 @@ import { withTransaction } from '../../utils/transactionHelper.js';
 
 class CompanyService extends BaseService {
     constructor() {
-        super(Company);
+        super(Company, 'company_id');
     }
 
     // Override create method to add extra logic

@@ -2,39 +2,43 @@ import { DataTypes, Model } from 'sequelize';
 import sequelize from '../../config/db.js';
 import PAYMENT_MODES from '../../constants/paymentModes.js'; // Ensure this is an array of strings
 import Company from '../company/Company.js';
-import ExpenseCategory from '../expense/ExpenseCategories.js';
-import ExpenseEntry from '../expense/ExpenseEntry.js';
+import EmployeePayroll from '../employee/EmployeePayroll.js';
 
 class SalaryLedger extends Model { }
 
 SalaryLedger.init({
+    salary_Ledger_id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false
+    },
+    employee_payroll_id: {
+        type: DataTypes.INTEGER,
+        references: {
+            model: EmployeePayroll,
+            key: 'employee_payroll_id'
+        }
+    },
     company_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
             model: Company,
-            key: 'id',
+            key: 'company_id' // Make sure this key matches the Company model’s primary key
         },
-    },
-    salary_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: ExpenseEntry,
-            key: 'id',
-        }
     },
     date: {
         type: DataTypes.DATE,
         allowNull: false,
     },
     description: {
-        type: DataTypes.STRING, // Changed to STRING if JSON is not necessary
+        type: DataTypes.STRING,
         allowNull: false,
     },
     transaction_id: {
         type: DataTypes.STRING,
-        trim: true,
+        allowNull: true,
     },
     payment_mode: {
         type: DataTypes.STRING,
@@ -57,8 +61,8 @@ SalaryLedger.init({
     },
 }, {
     sequelize,
-    modelName: 'Salary_Ledger',
+    modelName: 'Salary_Ledger', // Consistent naming
     timestamps: true,
 });
 
-export default SalaryLedger; // Export the model itself
+export default SalaryLedger;
