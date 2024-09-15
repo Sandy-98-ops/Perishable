@@ -46,66 +46,93 @@ class EmployeeService extends BaseService {
     }
 
     createEmployee = async (data) => {
-        if (!data || Object.keys(data).length === 0) {
-            throw new BadRequestError('Invalid data provided');
-        }
-
-        if (data.salary && data.number_of_hours) {
-            data.hourly_rate = data.salary / data.number_of_hours;
-        }
-
-        return withTransaction(async (transaction) => {
-            const existingEmployee = await Employee.findOne({
-                where: {
-                    [Op.or]: [
-                        { email: data.email },
-                        { phone_no: data.phone_no }
-                    ],
-                    company_id: data.company_id
-                },
-                transaction
-            });
-
-            if (existingEmployee) {
-                throw new ConflictError('Email or phone number already exists');
+        try {
+            if (!data || Object.keys(data).length === 0) {
+                throw new BadRequestError('Invalid data provided');
             }
 
-            const uniqueTransactionId = await this.generateUniqueTransactionId(data.company_id, transaction);
-            data.employee_id = uniqueTransactionId;
+            if (data.salary && data.number_of_hours) {
+                data.hourly_rate = data.salary / data.number_of_hours;
+            }
 
-            return Employee.create(data, { transaction });
-        });
+            return withTransaction(async (transaction) => {
+                const existingEmployee = await Employee.findOne({
+                    where: {
+                        [Op.or]: [
+                            { email: data.email },
+                            { phone_no: data.phone_no }
+                        ],
+                        company_id: data.company_id
+                    },
+                    transaction
+                });
+
+                if (existingEmployee) {
+                    throw new ConflictError('Email or phone number already exists');
+                }
+
+                const uniqueTransactionId = await this.generateUniqueTransactionId(data.company_id, transaction);
+                data.employee_id = uniqueTransactionId;
+
+                return Employee.create(data, { transaction });
+            });
+        } catch (error) {
+            console.error(error);
+            throw new InternalServerError('Error', error);
+        }
+
     }
 
     updateEmployee = async (id, data) => {
-        if (!data || Object.keys(data).length === 0) {
-            throw new BadRequestError('Invalid data provided');
-        }
-
-        if (data.salary && data.number_of_hours) {
-            data.hourly_rate = data.salary / data.number_of_hours;
-        }
-
-        return withTransaction(async (transaction) => {
-            const employee = await this.findByPk(id, { transaction });
-
-            if (!employee) {
-                throw new NotFoundError('Employee not found');
+        try {
+            if (!data || Object.keys(data).length === 0) {
+                throw new BadRequestError('Invalid data provided');
             }
 
-            await employee.update(data, { transaction });
-            return employee;
-        });
+            if (data.salary && data.number_of_hours) {
+                data.hourly_rate = data.salary / data.number_of_hours;
+            }
+
+            return withTransaction(async (transaction) => {
+                const employee = await this.findByPk(id, { transaction });
+
+                if (!employee) {
+                    throw new NotFoundError('Employee not found');
+                }
+
+                await employee.update(data, { transaction });
+                return employee;
+            });
+        } catch (error) {
+            console.error(error);
+            throw new InternalServerError('Error: ', error);
+        }
+
     }
 
     findEmployeesByCompany = async (companyId) => {
-        if (!companyId) {
-            throw new BadRequestError('Company ID is required');
+        try {
+            if (!companyId) {
+                throw new BadRequestError('Company ID is required');
+            }
+
+            return this.findAll(
+                { company_id: companyId }
+            );
+        } catch (error) {
+            console.error(error);
+            throw new InternalServerError('Error: ', error);
         }
 
-        return this.findAll(
-            { company_id: companyId }
-        );
+    }
+
+    findAllEmployees = async (companyId) => {
+        try {
+            return this.findAll();
+        } catch (error) {
+            console.error(error);
+            throw new InternalServerError('Error: ', error);
+        }
     }
 }
 
