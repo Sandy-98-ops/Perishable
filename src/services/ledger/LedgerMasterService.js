@@ -1,4 +1,4 @@
-import BaseService from "../../base/BaseService.js";
+import BaseService from '../base/BaseService.js';
 import LedgerMaster from "../../models/ledger/LedgerMaster.js";
 import Ledger from "../../models/ledger/Ledger.js";
 import LedgerService from "./LedgerService.js"; // Import LedgerService or similar

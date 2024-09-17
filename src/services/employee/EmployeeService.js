@@ -3,7 +3,7 @@ import Employee from '../../models/employee/Employee.js';
 import Counter from '../../utils/Counter.js';
 import { BadRequestError, ConflictError, InternalServerError, NotFoundError } from '../../utils/errors.js';
 import { withTransaction } from '../../utils/transactionHelper.js';
-import BaseService from '../../base/BaseService.js';
+import BaseService from "../base/BaseService.js";
 
 class EmployeeService extends BaseService {
     constructor() {

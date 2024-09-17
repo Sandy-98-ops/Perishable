@@ -1,9 +1,10 @@
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes } from 'sequelize';
 import sequelize from '../../config/db.js';
 import Employee from './Employee.js'; // Import the Employee model
 import Company from '../company/Company.js';
+import BaseModel from '../base/BaseModel.js';
 
-class EmployeeAttendance extends Model { }
+class EmployeeAttendance extends BaseModel { }
 
 EmployeeAttendance.init({
     employee_id: {

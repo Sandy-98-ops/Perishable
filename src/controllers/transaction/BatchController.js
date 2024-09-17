@@ -1,5 +1,4 @@
-import BaseController from "../../base/BaseController.js";
-import BatchService from "../../services/transaction/BatchService.js";
+import BaseController from "../base/BaseController.js";import BatchService from "../../services/transaction/BatchService.js";
 import { BadRequestError } from "../../utils/errors.js";
 
 class BatchController extends BaseController {

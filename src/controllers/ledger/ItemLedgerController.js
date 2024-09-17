@@ -1,17 +1,12 @@
-import BaseController from "../base/BaseController.js"; import ItemService from "../../services/transaction/ItemService.js";
-import { BadRequestError } from "../../utils/errors.js";
+import BaseController from "../base/BaseController.js";
 
-class ItemController extends BaseController {
+class ItemLedgerController extends BaseController {
     create = async (req, res) => {
         try {
             // TODO: Implement create method
             if (!req.body || Object.keys(req.body).length === 0) {
-                throw new BadRequestError("Please enter proper data")
+
             }
-
-            const item = await ItemService.create(req.body);
-
-            this.handleSuccess(res, 201, item);
 
         } catch (error) {
             this.handleError(res, error);
@@ -50,4 +45,4 @@ class ItemController extends BaseController {
         }
     }
 }
-export default new ItemController();
+export default new ItemLedgerController();

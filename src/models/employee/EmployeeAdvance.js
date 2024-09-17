@@ -3,8 +3,9 @@ import sequelize from '../../config/db.js';
 import Employee from './Employee.js'; // Import the Employee model
 import Company from '../company/Company.js'; // Import the Company model
 import PAYMENT_MODES from '../../constants/paymentModes.js';
+import BaseModel from '../base/BaseModel.js';
 
-class EmployeeAdvance extends Model { }
+class EmployeeAdvance extends BaseModel { }
 
 EmployeeAdvance.init({
     employee_id: {
@@ -52,8 +53,12 @@ EmployeeAdvance.init({
         allowNull: false,
         validate: {
             isIn: [PAYMENT_MODES], // Ensures only valid payment modes are accepted
-        },
-    }
+        }
+    },
+    description: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
 }, {
     sequelize,
     modelName: 'Employee_Advance',

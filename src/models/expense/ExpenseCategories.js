@@ -1,8 +1,9 @@
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes } from 'sequelize';
 import sequelize from '../../config/db.js';
 import Company from '../company/Company.js';
+import BaseModel from '../base/BaseModel.js';
 
-class ExpenseCategory extends Model { }
+class ExpenseCategory extends BaseModel { }
 
 ExpenseCategory.init({
     expense_category_id: {

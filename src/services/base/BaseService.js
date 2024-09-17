@@ -1,5 +1,5 @@
-import { NotFoundError, BadRequestError, ValidationError } from '../utils/errors.js';
-import { withTransaction } from '../utils/transactionHelper.js';
+import { NotFoundError, BadRequestError, ValidationError } from '../../utils/errors.js';
+import { withTransaction } from '../../utils/transactionHelper.js';
 
 class BaseService {
     constructor(model, primaryKey = 'id') {
@@ -8,17 +8,20 @@ class BaseService {
     }
 
     // Create method with transaction support
-    create = async (data) => {
+    create = async (data, userId) => {
         if (!data || Object.keys(data).length === 0) {
             throw new BadRequestError('Invalid data provided');
         }
 
+        // Ensure created_by is included in the data object
+        const dataWithUser = { ...data, created_by: userId == undefined ? null : userId };
+
         try {
             return await withTransaction(async (transaction) => {
-                return await this.model.create(data, { transaction });
+                return await this.model.create(dataWithUser, { transaction });
             });
         } catch (error) {
-            throw new ValidationError('Failed to create document', error);
+            throw new ValidationError(`Failed to create document ${error}`);
         }
     }
 
@@ -30,9 +33,6 @@ class BaseService {
 
         try {
             const document = await this.model.findByPk(id); // Use findByPk instead of findById
-            if (!document) {
-                throw new NotFoundError('Document not found');
-            }
 
             return document;
         } catch (error) {
@@ -48,9 +48,6 @@ class BaseService {
 
         try {
             const document = await this.model.findOne({ where: query });
-            if (!document) {
-                throw new NotFoundError('Document not found');
-            }
 
             return document;
         } catch (error) {
@@ -68,14 +65,17 @@ class BaseService {
     }
 
     // Update method with transaction support
-    update = async (id, data) => {
+    update = async (id, data, userId) => {
         if (!id || !data || Object.keys(data).length === 0) {
             throw new BadRequestError('Invalid ID or data provided');
         }
 
+        // Ensure updated_by is included in the data object
+        const dataWithUser = { ...data, updated_by: userId };
+
         try {
             return await withTransaction(async (transaction) => {
-                const [affectedRows] = await this.model.update(data, {
+                const [affectedRows] = await this.model.update(dataWithUser, {
                     where: { [this.primaryKey]: id },
                     transaction
                 });

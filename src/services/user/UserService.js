@@ -4,7 +4,7 @@ import { validatePassword } from "../../utils/validateModels.js";
 import { BadRequestError, NotFoundError } from "../../utils/errors.js";
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import BaseService from "../../base/BaseService.js";
+import BaseService from "../base/BaseService.js";
 
 dotenv.config();
 

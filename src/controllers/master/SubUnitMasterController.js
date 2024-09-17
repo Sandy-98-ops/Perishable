@@ -1,17 +1,17 @@
-import BaseController from "../base/BaseController.js"; import ItemService from "../../services/transaction/ItemService.js";
-import { BadRequestError } from "../../utils/errors.js";
+import SubUnitMasterService from "../../services/master/SubUnitMasterService.js";
+import BaseController from "../base/BaseController.js";
 
-class ItemController extends BaseController {
+class SubUnitMasterController extends BaseController {
     create = async (req, res) => {
         try {
             // TODO: Implement create method
             if (!req.body || Object.keys(req.body).length === 0) {
-                throw new BadRequestError("Please enter proper data")
+
             }
 
-            const item = await ItemService.create(req.body);
+            const subUnitMaster = await SubUnitMasterService.create(req.body);
 
-            this.handleSuccess(res, 201, item);
+            this.handleSuccess(res, 201, subUnitMaster);
 
         } catch (error) {
             this.handleError(res, error);
@@ -21,6 +21,7 @@ class ItemController extends BaseController {
     findById = async (req, res) => {
         try {
             // TODO: Implement findById method
+            this.handleSuccess(res, 200, (await SubUnitMasterService.findById(req.params.id)));
         } catch (error) {
             this.handleError(res, error);
         }
@@ -29,6 +30,7 @@ class ItemController extends BaseController {
     findAll = async (req, res) => {
         try {
             // TODO: Implement findAll method
+            this.handleSuccess(res, 200, (await SubUnitMasterService.findAll()));
         } catch (error) {
             this.handleError(res, error);
         }
@@ -50,4 +52,4 @@ class ItemController extends BaseController {
         }
     }
 }
-export default new ItemController();
+export default new SubUnitMasterController();

@@ -1,4 +1,4 @@
-import BaseService from "../../base/BaseService.js";
+import BaseService from '../base/BaseService.js';
 import SalaryLedger from "../../models/ledger/SalaryLedger.js";
 import Counter from "../../utils/Counter.js";
 import CashLedgerService from "./CashLedgerService.js";
@@ -47,64 +47,62 @@ class SalaryLedgerService extends BaseService {
     }
 
     // Method to create a salary ledger entry and related cash/bank ledger entries
-    createSalaryLedger = async (salaryEntry) => {
+    createSalaryLedger = async (salaryEntry, transaction) => {
         if (!salaryEntry || Object.keys(salaryEntry).length === 0) {
             throw new BadRequestError('Invalid data provided');
         }
 
-        return withTransaction(async (transaction) => {
-            const { company_id, amount, payment_mode, ...rest } = salaryEntry;
-
-            // Fetch the most recent SalaryLedger entry for the company
-            const recentEntry = await SalaryLedger.findOne({
-                where: { company_id },
-                order: [['createdAt', 'DESC']],
-                transaction
-            });
-
-            const previousBalance = recentEntry ? recentEntry.balance : 0;
-            const newBalance = previousBalance + amount;
-
-            const uniqueTransactionId = await this.generateUniqueTransactionId(company_id, transaction);
-
-            const salaryLedger = await this.create({
-                employee_payroll_id: salaryEntry.payroll_id,
-                company_id,
-                transaction_id: uniqueTransactionId,
-                description: "Salary",
-                date: salaryEntry.date,
-                payment_mode: salaryEntry.payment_mode,
-                balance: newBalance,
-                debit: 0,
-                credit: amount,
-                ...rest
-            }, { transaction });
-
-            let cashLedger = null, bankLedger = null;
-            if (salaryLedger) {
-                if (['Cash', 'Cash on Delivery'].includes(payment_mode)) {
-                    cashLedger = await CashLedgerService.createCashLedger({
-                        company_id,
-                        date: salaryEntry.date,
-                        description: salaryEntry.description,
-                        payment_mode: payment_mode,
-                        debit: amount,
-                        credit: 0
-                    }, transaction);
-                } else if (['Credit Card', 'Debit Card', 'Bank Transfer', 'Cheque', 'Online Payment Gateway', 'Mobile Payment'].includes(payment_mode)) {
-                    bankLedger = await BankLedgerService.createBankLedger({
-                        company_id,
-                        date: salaryEntry.date,
-                        description: salaryEntry.description,
-                        payment_mode: payment_mode,
-                        debit: amount,
-                        credit: 0
-                    }, transaction);
-                }
-            }
-
-            return { salaryLedger, cashLedger, bankLedger };
+        // Fetch the most recent SalaryLedger entry for the company
+        const recentEntry = await SalaryLedger.findOne({
+            where: { company_id: salaryEntry.company_id },
+            order: [['created_at', 'DESC']],
+            transaction
         });
+
+        const previousBalance = recentEntry ? recentEntry.balance : 0;
+        const newBalance = previousBalance + salaryEntry.amount;
+
+        const uniqueTransactionId = await this.generateUniqueTransactionId(salaryEntry.company_id, transaction);
+
+        const salaryLedger = await this.model.create({
+            employee_payroll_id: salaryEntry.payroll_id,
+            company_id: salaryEntry.company_id,
+            transaction_id: uniqueTransactionId,
+            description: "Salary",
+            date: salaryEntry.date,
+            payment_mode: salaryEntry.payment_mode,
+            balance: newBalance,
+            debit: 0,
+            credit: salaryEntry.amount,
+        }, { transaction });
+
+        let cashLedger = null, bankLedger = null;
+        if (salaryLedger) {
+            if (['Cash', 'Cash on Delivery'].includes(salaryEntry.payment_mode)) {
+                cashLedger = await CashLedgerService.createCashLedger({
+                    reference_id: salaryLedger.transaction_id,
+                    company_id: salaryEntry.company_id,
+                    date: salaryEntry.date,
+                    description: "Salary",
+                    payment_mode: salaryEntry.payment_mode,
+                    debit: salaryEntry.amount,
+                    credit: 0
+                }, transaction);
+            } else if (['Credit Card', 'Debit Card', 'Bank Transfer', 'Cheque', 'Online Payment Gateway', 'Mobile Payment']
+                .includes(salaryEntry.payment_mode)) {
+                bankLedger = await BankLedgerService.createBankLedger({
+                    reference_id: salaryLedger.transaction_id,
+                    company_id: salaryEntry.company_id,
+                    date: salaryEntry.date,
+                    description: "Salary",
+                    payment_mode: salaryEntry.payment_mode,
+                    debit: salaryEntry.amount,
+                    credit: 0
+                }, transaction);
+            }
+        }
+
+        return { salaryLedger, cashLedger, bankLedger };
     }
 }
 

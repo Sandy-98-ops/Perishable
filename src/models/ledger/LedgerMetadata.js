@@ -1,8 +1,9 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../../config/db.js';
 import Ledger from './Ledger.js';
+import BaseModel from '../base/BaseModel.js';
 
-class LedgerMetaData extends Model { }
+class LedgerMetaData extends BaseModel { }
 
 LedgerMetaData.init({
     invoiceNo: {

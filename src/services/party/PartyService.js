@@ -1,4 +1,4 @@
-import BaseService from "../../base/BaseService.js";
+import BaseService from '../base/BaseService.js';
 import Party from "../../models/party/Party.js";
 import Counter from "../../utils/Counter.js";
 import Ledger from "../../models/ledger/Ledger.js";

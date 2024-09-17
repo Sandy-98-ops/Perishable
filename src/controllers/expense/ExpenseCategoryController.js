@@ -1,4 +1,4 @@
-import BaseController from '../../base/BaseController.js';
+import BaseController from "../base/BaseController.js";
 import ExpenseCategoryService from '../../services/expense/ExpenseCategoryService.js';
 import { BadRequestError, NotFoundError } from '../../utils/errors.js';
 

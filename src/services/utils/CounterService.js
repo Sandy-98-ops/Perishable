@@ -1,5 +1,5 @@
-import BaseService from "../../base/BaseService.js";
-import Counter from "../../utils/Counter.js";
+import BaseService from '../base/BaseService.js';
+import Counter from '../../utils/Counter.js'
 
 class CounterService extends BaseService {
 

@@ -1,4 +1,4 @@
-import BaseController from '../../base/BaseController.js';
+import BaseController from "../base/BaseController.js";
 import EmployeeAttendanceService from '../../services/employee/EmployeeAttendanceService.js';
 import { BadRequestError, NotFoundError } from '../../utils/errors.js';
 

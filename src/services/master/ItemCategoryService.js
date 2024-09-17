@@ -1,4 +1,4 @@
-import BaseService from "../../base/BaseService.js";
+import BaseService from '../base/BaseService.js';
 import ItemCategory from "../../models/master/ItemCategory.js";
 
 

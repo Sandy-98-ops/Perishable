@@ -1,5 +1,4 @@
-import BaseController from "../../base/BaseController.js";
-import PartyService from "../../services/party/PartyService.js";
+import BaseController from "../base/BaseController.js";import PartyService from "../../services/party/PartyService.js";
 import { BadRequestError } from "../../utils/errors.js";
 
 class PartyController extends BaseController {

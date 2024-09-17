@@ -1,10 +1,11 @@
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes } from 'sequelize';
 import sequelize from '../../config/db.js';
 import Employee from './Employee.js';
 import Company from '../company/Company.js'; // Ensure the path to the Company model is correct
 import PAYMENT_MODES from '../../constants/paymentModes.js';
+import BaseModel from '../base/BaseModel.js';
 
-class EmployeePayroll extends Model { }
+class EmployeePayroll extends BaseModel { }
 
 EmployeePayroll.init({
     employee_payroll_id: {

@@ -1,39 +1,37 @@
-// models/ledger/AdvanceLedger.js
 import { DataTypes } from 'sequelize';
 import sequelize from '../../config/db.js';
-import PAYMENT_MODES from '../../constants/paymentModes.js'; // Ensure this is an array of strings
-import Company from '../company/Company.js';
-import ExpenseEntry from '../expense/ExpenseEntry.js';
 import Employee from '../employee/Employee.js';
+import Company from '../company/Company.js';
+import PAYMENT_MODES from '../../constants/paymentModes.js';
+import BaseModel from '../base/BaseModel.js';
+import EmployeeAdvance from '../employee/EmployeeAdvance.js';
 
-const AdvanceLedger = sequelize.define('AdvanceLedger', {
-    company_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: Company,
-            key: 'company_id',
-        },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
-    },
+class AdvanceLedger extends BaseModel { }
+
+AdvanceLedger.init({
     employee_id: {
         type: DataTypes.INTEGER,
-        allowNull: false,
         references: {
-            model: Employee,
+            model: Employee, // Name of the table for Employee model
             key: 'emp_id',
         },
+        allowNull: false,
+    },
+    company_id: {
+        type: DataTypes.INTEGER,
+        references: {
+            model: Company, // Name of the table for Company model
+            key: 'company_id',
+        },
+        allowNull: true,
     },
     advance_id: {
         type: DataTypes.INTEGER,
-        allowNull: false,
         references: {
-            model: ExpenseEntry,
+            model: EmployeeAdvance, // Name of the table for EmployeeAdvance model
             key: 'id',
         },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
+        allowNull: true,
     },
     date: {
         type: DataTypes.DATE,
@@ -46,7 +44,6 @@ const AdvanceLedger = sequelize.define('AdvanceLedger', {
     transaction_id: {
         type: DataTypes.STRING,
         allowNull: true,
-        trim: true,
     },
     payment_mode: {
         type: DataTypes.STRING,
@@ -67,18 +64,17 @@ const AdvanceLedger = sequelize.define('AdvanceLedger', {
         type: DataTypes.FLOAT,
         defaultValue: 0,
     },
-    createdAt: {
-        type: DataTypes.DATE,
-        allowNull: false,
-    },
-    updatedAt: {
-        type: DataTypes.DATE,
-        allowNull: false,
-    },
 }, {
-    tableName: 'Advance_Ledgers', // Explicitly set table name if different from modelName
-    timestamps: true, // Automatically manage createdAt and updatedAt
+    sequelize,
+    modelName: 'Advance_Ledger',
+    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
 });
 
+// Define associations
+AdvanceLedger.belongsTo(Employee, { foreignKey: 'employee_id', as: 'employee' });
+AdvanceLedger.belongsTo(Company, { foreignKey: 'company_id', as: 'company' });
+AdvanceLedger.belongsTo(EmployeeAdvance, { foreignKey: 'advance_id', as: 'employee_advance' });
 
 export default AdvanceLedger;

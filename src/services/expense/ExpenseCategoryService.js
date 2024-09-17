@@ -1,4 +1,4 @@
-import BaseService from "../../base/BaseService.js";
+import BaseService from '../base/BaseService.js';
 import ExpenseCategory from "../../models/expense/ExpenseCategories.js";
 
 class ExpenseCategoryService extends BaseService {

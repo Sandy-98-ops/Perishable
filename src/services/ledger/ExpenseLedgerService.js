@@ -2,8 +2,7 @@ import ExpenseLedger from '../../models/ledger/ExpenseLedger.js';
 import CashLedgerService from '../ledger/CashLedgerService.js';
 import BankLedgerService from '../ledger/BankLedgerService.js';
 import { InternalServerError, BadRequestError } from '../../utils/errors.js';
-import { withTransaction } from '../../utils/transactionHelper.js';
-import BaseService from '../../base/BaseService.js';
+import BaseService from "../base/BaseService.js";
 import Counter from '../../utils/Counter.js';
 
 class ExpenseLedgerService extends BaseService {
@@ -39,7 +38,7 @@ class ExpenseLedgerService extends BaseService {
         try {
             const recentEntry = await this.model.findOne({
                 where: { company_id: expenseEntry.company_id },
-                order: [['createdAt', 'DESC']],
+                order: [['created_at', 'DESC']],
                 transaction
             });
 
@@ -104,7 +103,7 @@ class ExpenseLedgerService extends BaseService {
             // Fetch the most recent ledger entry for the company to calculate balance
             const recentEntry = await this.model.findOne({
                 where: { company_id },
-                order: [['createdAt', 'DESC']],
+                order: [['created_at', 'DESC']],
                 transaction
             });
 
@@ -137,8 +136,8 @@ class ExpenseLedgerService extends BaseService {
 
             if (updatedLedger.payment_mode === 'Cash' || updatedLedger.payment_mode === 'Cash on Delivery') {
 
-                const cashLedger = 
-                cashLedger = await CashLedgerService.updateCashLedger(ledgerData, transaction);
+                const cashLedger =
+                    cashLedger = await CashLedgerService.updateCashLedger(ledgerData, transaction);
             } else if (['Credit Card', 'Debit Card', 'Bank Transfer', 'Cheque', 'Online Payment Gateway', 'Mobile Payment'].includes(updatedLedger.payment_mode)) {
                 bankLedger = await BankLedgerService.update(ledgerData, transaction);
             }

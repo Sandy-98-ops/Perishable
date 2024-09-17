@@ -16,6 +16,7 @@ import itemCategoryRouter from '../routers/master/ItemCategoryRouter.js';
 import unitMasterRouter from '../routers/master/UnitMasterRouter.js';
 import batchRouter from '../routers/transaction/BatchRouter.js';
 import itemRouter from '../routers/transaction/ItemRouter.js';
+import subUnitMasterRouter from '../routers/master/SubUnitMasterRouter.js';
 
 
 const apiRouter = express.Router();
@@ -25,7 +26,7 @@ apiRouter.use((req, res, next) => {
     const validEndpoints = ['/user', '/party',
         '/company', '/ledger', '/ledgerCategory', '/ledgerMaster', '/employee', '/expenseCategory', '/expenseEntry',
         '/employeeAdvance', '/employeeAttendance', '/employeePayroll', '/expenseLedger', '/itemCategory', '/unitMaster',
-        '/batch', '/item'
+        '/batch', '/item', '/subUnitMaster'
     ];
 
     // Check if the request path starts with one of the valid base paths
@@ -55,6 +56,7 @@ apiRouter.use('/expenseEntry', expenseEntryRouter);
 apiRouter.use('/expenseLedger', expenseLedgerRouter);
 apiRouter.use('/itemCategory', itemCategoryRouter);
 apiRouter.use("/unitMaster", unitMasterRouter);
+apiRouter.use("/subUnitMaster", subUnitMasterRouter);
 apiRouter.use("/batch", batchRouter);
 apiRouter.use("/item", itemRouter);
 

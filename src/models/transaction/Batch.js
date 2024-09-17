@@ -1,37 +1,43 @@
-import { DataTypes, DATE, DECIMAL, STRING } from "sequelize";
-import sequelize from "../../config/db.js";
-import Item from "./Item.js";
+import { DataTypes } from 'sequelize';
+import sequelize from '../../config/db.js';
+import Item from './Item.js';
+import BaseModel from '../base/BaseModel.js'; // Import your BaseModel
 
-const Batch = sequelize.define("Batch", {
+class Batch extends BaseModel { }
+
+Batch.init({
     batch_id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true,
-        allowNull: false
+        allowNull: false,
     },
     item_id: {
         type: DataTypes.INTEGER,
         references: {
             model: Item,
-            key : 'item_id'
-        }
+            key: 'item_id',
+        },
+        allowNull: false, // Ensure this foreign key is not nullable if appropriate
     },
     batch_name: {
-        type: STRING,
-        allowNull: false
+        type: DataTypes.STRING,
+        allowNull: false,
     },
     creation_date: {
-        type: DATE,
-        allowNull: false
+        type: DataTypes.DATE,
+        allowNull: false,
     },
     initial_stock: {
-        type: DECIMAL,
-        defaultValue: 0.0
+        type: DataTypes.DECIMAL,
+        defaultValue: 0.0,
     },
 }, {
     sequelize,
-    tableName: "batch",
-    timestamps: true
+    modelName: 'Batch',
+    tableName: 'batches', // Use plural and underscore for table name
+    timestamps: true, // Ensure timestamps are enabled
+    underscored: true, // Use snake_case for column names
 });
 
 export default Batch;

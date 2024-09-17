@@ -1,29 +1,31 @@
-// models/ledger/BankLedger.js
 import { DataTypes } from 'sequelize';
 import sequelize from '../../config/db.js';
-import PAYMENT_MODES from '../../constants/paymentModes.js'; // Ensure this is an array of strings
 import Company from '../company/Company.js';
+import PAYMENT_MODES from '../../constants/paymentModes.js';
+import BaseModel from '../base/BaseModel.js';
 
-// Define the BankLedger model
-const BankLedger = sequelize.define('BankLedger', {
+class BankLedger extends BaseModel { }
+
+BankLedger.init({
     company_id: {
         type: DataTypes.INTEGER,
-        allowNull: true, // Set to true if optional
         references: {
-            model: Company, // Ensure this references the correct model
+            model: Company,
             key: 'company_id',
         },
+        allowNull: true, // Set to true if optional
     },
     date: {
         type: DataTypes.DATE,
         allowNull: false,
     },
     description: {
-        type: DataTypes.JSON, // Use JSON if needed for multiple language entries or complex data
+        type: DataTypes.STRING, // Changed to STRING for simplicity unless JSON is necessary
         allowNull: false,
     },
     transaction_id: {
         type: DataTypes.STRING,
+        allowNull: true,
         trim: true,
     },
     payment_mode: {
@@ -46,18 +48,20 @@ const BankLedger = sequelize.define('BankLedger', {
         defaultValue: 0,
     },
 }, {
-    tableName: 'Bank_Ledger', // Explicitly define the table name
-    timestamps: true, // Ensure timestamps are enabled
+    sequelize,
+    modelName: 'Bank_Ledger',
+    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
 });
+
+// Define associations
+BankLedger.belongsTo(Company, { foreignKey: 'company_id', as: 'company' });
 
 // Define any instance methods if necessary
 // Example: Method to get formatted transaction details
 BankLedger.prototype.getFormattedTransaction = function () {
     return `Transaction ID: ${this.transaction_id}, Date: ${this.date.toISOString().split('T')[0]}`;
 };
-
-// Define associations if necessary
-BankLedger.belongsTo(Company, { foreignKey: 'company_id' });
-// Add other associations if applicable
 
 export default BankLedger;

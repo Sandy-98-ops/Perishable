@@ -1,4 +1,4 @@
-import BaseService from '../../base/BaseService.js';
+import BaseService from "../base/BaseService.js";
 import Company from '../../models/company/Company.js';
 import ExpenseCategory from '../../models/expense/ExpenseCategories.js';
 import { ConflictError } from '../../utils/errors.js';

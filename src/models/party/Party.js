@@ -2,8 +2,9 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../../config/db.js';
 import Company from '../company/Company.js';
+import BaseModel from '../base/BaseModel.js';
 
-class Party extends Model { }
+class Party extends BaseModel { }
 
 Party.init({
     company_id: {

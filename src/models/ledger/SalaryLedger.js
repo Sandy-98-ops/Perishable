@@ -3,8 +3,9 @@ import sequelize from '../../config/db.js';
 import PAYMENT_MODES from '../../constants/paymentModes.js'; // Ensure this is an array of strings
 import Company from '../company/Company.js';
 import EmployeePayroll from '../employee/EmployeePayroll.js';
+import BaseModel from '../base/BaseModel.js';
 
-class SalaryLedger extends Model { }
+class SalaryLedger extends BaseModel { }
 
 SalaryLedger.init({
     salary_Ledger_id: {
@@ -63,6 +64,8 @@ SalaryLedger.init({
     sequelize,
     modelName: 'Salary_Ledger', // Consistent naming
     timestamps: true,
+    createdAt: 'created_at',
+    modifiedAt: 'modified_at'
 });
 
 export default SalaryLedger;

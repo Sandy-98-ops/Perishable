@@ -1,7 +1,7 @@
-import BaseController from "../../base/BaseController.js";
 import UserService from "../../services/user/UserService.js";
 import { BadRequestError, NotFoundError } from "../../utils/errors.js";
 import { validatePassword } from "../../utils/validateModels.js";
+import BaseController from "../base/BaseController.js";
 
 class UserController extends BaseController {
     constructor() {

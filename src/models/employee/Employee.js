@@ -1,11 +1,12 @@
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes } from 'sequelize';
 import sequelize from '../../config/db.js';
 import Company from '../company/Company.js';
 import bcrypt from 'bcrypt';
+import BaseModel from '../base/BaseModel.js';
 
 const SALT_ROUNDS = 10; // Define your salt rounds here or import from config
 
-class Employee extends Model { }
+class Employee extends BaseModel { }
 
 Employee.init({
     emp_id: {

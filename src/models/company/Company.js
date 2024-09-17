@@ -1,10 +1,9 @@
-// src/models/Company.js
 import { DataTypes } from 'sequelize';
 import bcrypt from 'bcrypt';
-import BaseModel from '../../base/BaseModel.js';
 import sequelize from '../../config/db.js';
+import BaseModel from '../base/BaseModel.js';
 
-const SALT_ROUNDS = 10; // Number of salt rounds for hashing
+const SALT_ROUNDS = 10;
 
 class Company extends BaseModel { }
 
@@ -79,10 +78,10 @@ Company.init({
     digital_sign: {
         type: DataTypes.STRING,
         allowNull: true,
-    },
+    }
 }, {
     sequelize,
-    tableName: 'company', // Ensure this matches your actual table name
+    tableName: 'company',
     hooks: {
         beforeSave: async (company) => {
             if (company.changed('password')) {
@@ -91,9 +90,9 @@ Company.init({
             }
         },
     },
+    // Note: No need to redefine timestamps and date fields here
 });
 
-// Instance method to check password
 Company.prototype.checkPassword = async function (password) {
     return await bcrypt.compare(password, this.password);
 };

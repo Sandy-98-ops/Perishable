@@ -1,4 +1,4 @@
-import BaseService from "../../base/BaseService.js";
+import BaseService from '../base/BaseService.js';
 import LedgerCategory from "../../models/ledger/LedgerCategories.js";
 import { BadRequestError, NotFoundError } from "../../utils/errors.js";
 import { withTransaction } from "../../utils/transactionHelper.js";

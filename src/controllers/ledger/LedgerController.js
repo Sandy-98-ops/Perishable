@@ -1,4 +1,4 @@
-import BaseController from "../../base/BaseController.js";
+import BaseController from "../base/BaseController.js";
 import LedgerService from "../../services/ledger/LedgerService.js";
 import { BadRequestError, NotFoundError } from "../../utils/errors.js";
 

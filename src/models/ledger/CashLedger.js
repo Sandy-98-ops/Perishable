@@ -1,36 +1,36 @@
-// models/ledger/CashLedger.js
 import { DataTypes } from 'sequelize';
 import sequelize from '../../config/db.js';
-import PAYMENT_MODES from '../../constants/paymentModes.js'; // Ensure this is an array of strings
 import Company from '../company/Company.js';
-import ExpenseCategory from '../expense/ExpenseCategories.js'; // Import if necessary for relationships
+import PAYMENT_MODES from '../../constants/paymentModes.js';
+import BaseModel from '../base/BaseModel.js';
 
-// Define the CashLedger model
-const CashLedger = sequelize.define('CashLedger', {
+class CashLedger extends BaseModel { }
+
+CashLedger.init({
     company_id: {
         type: DataTypes.INTEGER,
-        allowNull: true, // Changed to allowNull: true if it's optional
         references: {
-            model: Company, // Ensure this references the correct model
+            model: Company,
             key: 'company_id',
         },
+        allowNull: true, // Set to true if optional
     },
     date: {
         type: DataTypes.DATE,
         allowNull: false,
     },
     description: {
-        type: DataTypes.JSON, // Use JSON if needed for multiple language entries or complex data
+        type: DataTypes.STRING, // Changed to STRING for simplicity unless JSON is needed
         allowNull: false,
     },
     transaction_id: {
         type: DataTypes.STRING,
+        allowNull: false,
         trim: true,
-        allowNull: false
     },
     reference_id: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
     },
     payment_mode: {
         type: DataTypes.STRING,
@@ -52,18 +52,21 @@ const CashLedger = sequelize.define('CashLedger', {
         defaultValue: 0.0,
     },
 }, {
-    tableName: 'Cash_Ledger', // Explicitly define the table name
-    timestamps: true, // Ensure timestamps are enabled
+    sequelize,
+    modelName: 'Cash_Ledger',
+    tableName: 'Cash_Ledger',
+    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
 });
+
+// Define associations
+CashLedger.belongsTo(Company, { foreignKey: 'company_id', as: 'company' });
 
 // Define any instance methods if necessary
 // Example: Method to get formatted transaction details
 CashLedger.prototype.getFormattedTransaction = function () {
     return `Transaction ID: ${this.transaction_id}, Date: ${this.date.toISOString().split('T')[0]}`;
 };
-
-// Define associations if necessary
-CashLedger.belongsTo(Company, { foreignKey: 'company_id' });
-// Add other associations if applicable
 
 export default CashLedger;

@@ -4,8 +4,9 @@ import PAYMENT_MODES from '../../constants/paymentModes.js'; // Ensure this is a
 import Company from '../company/Company.js';
 import Party from '../party/Party.js';
 import LedgerMaster from './LedgerMaster.js';
+import BaseModel from '../base/BaseModel.js';
 
-class Ledger extends Model { }
+class Ledger extends BaseModel { }
 
 Ledger.init({
     company_id: {

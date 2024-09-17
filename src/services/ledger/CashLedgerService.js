@@ -1,4 +1,4 @@
-import BaseService from '../../base/BaseService.js';
+import BaseService from "../base/BaseService.js";
 import CashLedger from '../../models/ledger/CashLedger.js';
 import Counter from '../../utils/Counter.js';
 import { InternalServerError } from '../../utils/errors.js';
@@ -51,7 +51,7 @@ class CashLedgerService extends BaseService {
 
                 const recentEntry = await CashLedger.findOne({
                     where: { company_id: data.company_id },
-                    order: [['createdAt', 'DESC']],
+                    order: [['created_at', 'DESC']],
                     transaction
                 });
 
@@ -66,6 +66,7 @@ class CashLedgerService extends BaseService {
 
                 const cashLedger = await CashLedger.create({
                     company_id: data.company_id,
+                    reference_id: data.reference_id,
                     date: data.date,
                     description: data.description,
                     transaction_id: uniqueTransactionId,

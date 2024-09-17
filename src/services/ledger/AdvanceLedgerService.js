@@ -1,10 +1,10 @@
-import BaseService from '../../base/BaseService.js';
+import BaseService from "../base/BaseService.js";
 import AdvanceLedger from '../../models/ledger/AdvanceLedger.js';
-import Counter from '../../models/utils/Counter.js';
 import { InternalServerError } from '../../utils/errors.js';
 import { withTransaction } from '../../utils/transactionHelper.js';
 import BankLedgerService from './BankLedgerService.js';
 import CashLedgerService from './CashLedgerService.js';
+import Counter from "../../utils/Counter.js";
 
 class AdvanceLedgerService extends BaseService {
     constructor() {
@@ -29,7 +29,7 @@ class AdvanceLedgerService extends BaseService {
                     prefix: "Adv"
                 }, { transaction });
             } else {
-                counter = await counter.increment('sequence_value', { transaction });
+                await counter.increment('sequence_value', { transaction });
                 counter = await Counter.findOne({
                     where: { company_id, sequence_type },
                     transaction
@@ -48,65 +48,76 @@ class AdvanceLedgerService extends BaseService {
     }
 
     // Method to create advance ledger entry with transaction support
-    createAdvanceLedger = async (data) => {
-        return withTransaction(async (transaction) => {
-            try {
-                const uniqueTransactionId = await this.generateUniqueTransactionId(data.company_id, transaction);
+    createAdvanceLedger = async (data, transaction) => {
+        try {
+            const uniqueTransactionId = await this.generateUniqueTransactionId(data.company_id, transaction);
 
-                const recentEntry = await AdvanceLedger.findOne({
-                    where: { company_id: data.company_id },
-                    order: [['createdAt', 'DESC']],
-                    transaction
-                });
+            const recentEntry = await AdvanceLedger.findOne({
+                where: { company_id: data.company_id },
+                order: [['created_at', 'DESC']],
+                transaction
+            });
 
-                const previousBalance = recentEntry ? recentEntry.balance : 0;
-                const newBalance = previousBalance + data.amount;
+            const previousBalance = recentEntry ? recentEntry.balance : 0;
 
-                const advanceLedger = await AdvanceLedger.create({
-                    company_id: data.company_id,
-                    advance_id: data.id,
-                    date: data.advanceDate,
-                    description: data.description,
-                    transaction_id: uniqueTransactionId,
-                    payment_mode: data.payment_mode,
-                    debit: 0,
-                    credit: data.amount,
-                    balance: newBalance
-                }, { transaction });
+            let debit = 0;
+            let credit = 0;
+            let newBalance;
 
-                let cashLedger = null, bankLedger = null;
-                if (advanceLedger) {
-                    if (advanceLedger.payment_mode === 'Cash' || advanceLedger.payment_mode === 'Cash on Delivery') {
-                        cashLedger = await CashLedgerService.createCashLedger({
-                            company_id: data.company_id,
-                            date: data.advanceDate,
-                            description: data.description,
-                            payment_mode: data.payment_mode,
-                            debit: data.amount,
-                            credit: 0
-                        }, transaction);
-
-                    } else if (advanceLedger.payment_mode === 'Credit Card' || advanceLedger.payment_mode === 'Debit Card'
-                        || advanceLedger.payment_mode === 'Bank Transfer' || advanceLedger.payment_mode === 'Cheque'
-                        || advanceLedger.payment_mode === 'Online Payment Gateway' || advanceLedger.payment_mode === 'Mobile Payment'
-                    ) {
-                        bankLedger = await BankLedgerService.createBankLedger({
-                            company_id: data.company_id,
-                            date: data.advanceDate,
-                            description: data.description,
-                            payment_mode: data.payment_mode,
-                            debit: data.amount,
-                            credit: 0
-                        }, transaction);
-                    }
-                }
-
-                return { advanceLedger, cashLedger, bankLedger };
-            } catch (error) {
-                console.error('Error creating advance ledger:', error);
-                throw new InternalServerError('Error creating advance ledger');
+            // Set debit and credit amounts based on the transaction type
+            if (data.credit > 0.0) {
+                credit = data.amount;
+                newBalance = previousBalance + credit;
+            } else if (data.debit > 0.0) {
+                debit = data.amount;
+                newBalance = previousBalance - debit;
+            } else {
+                throw new InternalServerError('Either credit or debit amount must be greater than 0');
             }
-        });
+
+            // Create advance ledger entry
+            const advanceLedger = await AdvanceLedger.create({
+                employee_id: data.employee_id,
+                company_id: data.company_id,
+                advance_id: data.advance_id, // Use correct field name
+                date: data.date,
+                description: data.description,
+                transaction_id: uniqueTransactionId,
+                payment_mode: data.payment_mode,
+                debit,
+                credit,
+                balance: newBalance
+            }, { transaction });
+
+            let cashLedger = null, bankLedger = null;
+
+            if (advanceLedger) {
+                const ledgerData = {
+                    company_id: data.company_id,
+                    date: data.date,
+                    description: data.description,
+                    payment_mode: data.payment_mode,
+                    reference_id: advanceLedger.transaction_id,
+                    debit: 0,
+                    credit: 0
+                };
+
+                if (advanceLedger.payment_mode === 'Cash' || advanceLedger.payment_mode === 'Cash on Delivery') {
+                    ledgerData.debit = credit; // Reverse credit to debit
+                    ledgerData.credit = debit; // Reverse debit to credit
+                    cashLedger = await CashLedgerService.createCashLedger(ledgerData, transaction);
+                } else if (['Credit Card', 'Debit Card', 'Bank Transfer', 'Cheque', 'Online Payment Gateway', 'Mobile Payment'].includes(advanceLedger.payment_mode)) {
+                    ledgerData.debit = credit; // Reverse credit to debit
+                    ledgerData.credit = debit; // Reverse debit to credit
+                    bankLedger = await BankLedgerService.createBankLedger(ledgerData, transaction);
+                }
+            }
+
+            return { advanceLedger, cashLedger, bankLedger };
+        } catch (error) {
+            console.error('Error creating advance ledger:', error);
+            throw new InternalServerError('Error creating advance ledger');
+        }
     }
 }
 

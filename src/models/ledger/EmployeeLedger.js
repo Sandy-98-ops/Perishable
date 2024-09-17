@@ -1,14 +1,15 @@
+// src/models/EmployeeLedger.js
 import { DataTypes } from 'sequelize';
 import sequelize from '../../config/db.js';
-import ExpenseCategory from '../expense/ExpenseCategories.js';
-import ExpenseEntry from '../expense/ExpenseEntry.js';
+import BaseModel from '../base/BaseModel.js'; // Adjust path as needed
+import Employee from '../employee/Employee.js';
 import Company from '../company/Company.js';
 import PAYMENT_MODES from '../../constants/paymentModes.js';
-import Employee from '../employee/Employee.js';
 
 // Define the EmployeeLedger model
-const EmployeeLedger = sequelize.define('EmployeeLedger', {
+class EmployeeLedger extends BaseModel { }
 
+EmployeeLedger.init({
     employee_ledger_id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -29,14 +30,6 @@ const EmployeeLedger = sequelize.define('EmployeeLedger', {
         references: {
             model: Company,
             key: 'company_id',
-        },
-    },
-    expense_category_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: ExpenseCategory,
-            key: 'expense_category_id',
         },
     },
     date: {
@@ -70,10 +63,20 @@ const EmployeeLedger = sequelize.define('EmployeeLedger', {
         type: DataTypes.FLOAT,
         defaultValue: 0.0
     },
+    // Include fields from BaseModel
+    created_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
+    updated_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    }
 }, {
     sequelize,
-    tableName: 'Expense_Ledgers',
-    timestamps: true,
+    tableName: 'employee_ledger', // Ensure this matches your actual table name
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
 });
 
 export default EmployeeLedger;

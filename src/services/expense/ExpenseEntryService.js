@@ -1,4 +1,4 @@
-import BaseService from "../../base/BaseService.js";
+import BaseService from '../base/BaseService.js';
 import ExpenseEntry from "../../models/expense/ExpenseEntry.js";
 import ExpenseLedgerService from "../ledger/ExpenseLedgerService.js";
 import { BadRequestError, InternalServerError } from "../../utils/errors.js";

@@ -1,5 +1,4 @@
-import BaseController from "../../base/BaseController.js";
-import ItemCategoryService from "../../services/master/ItemCategoryService.js";
+import BaseController from "../base/BaseController.js"; import ItemCategoryService from "../../services/master/ItemCategoryService.js";
 import { BadRequestError } from "../../utils/errors.js";
 
 
@@ -17,6 +16,7 @@ class ItemCategoryController extends BaseController {
             this.handleSuccess(res, 201, itemCategory);
 
         } catch (error) {
+            console.log(error)
             this.handleError(res, error);
         }
     }
@@ -37,6 +37,7 @@ class ItemCategoryController extends BaseController {
     findAll = async (req, res) => {
         try {
             // TODO: Implement findAll method
+            this.handleSuccess(res, 200, (await ItemCategoryService.findAll()));
         } catch (error) {
             this.handleError(res, error);
         }

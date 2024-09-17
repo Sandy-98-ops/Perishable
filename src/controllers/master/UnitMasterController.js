@@ -1,5 +1,5 @@
-import BaseController from "../../base/BaseController.js";
-import { BadRequestError } from "../../utils/errors.js";
+import BaseController from "../base/BaseController.js"; import { BadRequestError } from "../../utils/errors.js";
+import UnitMasterService from "../../services/master/UnitMasterService.js";
 
 
 class UnitMasterController extends BaseController {
@@ -10,7 +10,12 @@ class UnitMasterController extends BaseController {
                 throw new BadRequestError("Please enter proper data")
             }
 
+            const unitMaster = await UnitMasterService.create(req.body);
+
+            return this.handleSuccess(res, 201, unitMaster);
+
         } catch (error) {
+            console.log(error)
             this.handleError(res, error);
         }
     }
@@ -26,6 +31,7 @@ class UnitMasterController extends BaseController {
     findAll = async (req, res) => {
         try {
             // TODO: Implement findAll method
+            this.handleSuccess(res, 200, await UnitMasterService.findAll());
         } catch (error) {
             this.handleError(res, error);
         }

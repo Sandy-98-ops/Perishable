@@ -1,4 +1,4 @@
-import BaseService from "../../base/BaseService.js";
+import BaseService from '../base/BaseService.js';
 import PAYMENT_MODES from "../../constants/paymentModes.js";
 import Ledger from "../../models/ledger/Ledger.js";
 import Counter from "../../utils/Counter.js";

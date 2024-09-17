@@ -1,4 +1,4 @@
-import BaseController from '../../base/BaseController.js';
+import BaseController from "../base/BaseController.js";
 import AdvanceLedgerService from '../../services/ledger/AdvanceLedgerService.js';
 
 class AdvanceLedgerController extends BaseController {
