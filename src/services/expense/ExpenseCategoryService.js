@@ -15,7 +15,7 @@ class ExpenseCategoryService extends BaseService {
 
         return this.model.findAll({
             where: {
-                company: companyId
+                company_id: companyId
             }
         });
     }

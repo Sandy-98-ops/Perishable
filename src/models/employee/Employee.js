@@ -3,6 +3,7 @@ import sequelize from '../../config/db.js';
 import Company from '../company/Company.js';
 import bcrypt from 'bcrypt';
 import BaseModel from '../base/BaseModel.js';
+import Role from '../master/Role.js';
 
 const SALT_ROUNDS = 10; // Define your salt rounds here or import from config
 
@@ -29,21 +30,19 @@ Employee.init({
             model: Company,
             key: 'company_id',
         },
-        allowNull: true,
+        allowNull: false,
     },
     employee_id: {
         type: DataTypes.STRING,
-        allowNull: true,
+        allowNull: false,
     },
     email: {
         type: DataTypes.STRING,
         allowNull: true,
-        unique: true // Ensure email is unique within the same company
     },
     phone_no: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true // Ensure phone number is unique within the same company
     },
     address: {
         type: DataTypes.STRING,
@@ -85,13 +84,13 @@ Employee.init({
         type: DataTypes.JSON, // Use JSON to store tax details
         allowNull: true,
     },
-    password: {
+    otp: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true
     },
-    role: {
-        type: DataTypes.JSON, // Use JSON to store roles as an array
-        allowNull: true,
+    otp_expiration: {
+        type: DataTypes.DATE,
+        allowNull: true
     }
 }, {
     sequelize,
@@ -119,5 +118,7 @@ Employee.init({
 
 // Define associations
 Employee.belongsTo(Company, { foreignKey: 'company_id', as: 'company' });
+Employee.belongsToMany(Role, { through: 'EmployeeRoles', foreignKey: 'emp_id' });
+Role.belongsToMany(Employee, { through: 'EmployeeRoles', foreignKey: 'role_id' });
 
 export default Employee;

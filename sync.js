@@ -28,6 +28,8 @@ import Company from './src/models/company/Company.js';
 import EmployeeLedger from './src/models/ledger/EmployeeLedger.js';
 import ExpenseEntry from './src/models/expense/ExpenseEntry.js';
 import ItemLedger from './src/models/ledger/ItemLedger.js';
+import Role from './src/models/master/Role.js';
+import EmployeeRoles from './src/models/employee/EmployeeRoles.js';
 
 (async () => {
     try {

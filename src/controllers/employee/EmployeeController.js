@@ -112,6 +112,26 @@ class EmployeeController extends BaseController {
             this.handleError(res, error);
         }
     }
+
+    requestOTP = async (req, res) => {
+        const email = req.params.email;
+        try {
+            this.handleSuccess(res, 201, (await EmployeeService.requestOTP(email)));
+        } catch (error) {
+            this.handleError(res, error);
+        }
+    }
+
+    validateOTP = async (req, res) => {
+        const email = req.params.email;
+        const otp = req.params.otp;
+        try {
+            this.handleSuccess(res, 200, (await EmployeeService.validateOTP(email, otp)));
+        } catch (error) {
+            console.log(error)
+            this.handleError(res, error);
+        }
+    }
 }
 
 export default new EmployeeController();
