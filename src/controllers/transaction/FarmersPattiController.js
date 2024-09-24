@@ -1,17 +1,17 @@
-import BaseController from "../base/BaseController.js"; import ItemService from "../../services/transaction/ItemService.js";
+import FarmersPattiService from "../../services/transaction/FarmersPattiService.js";
 import { BadRequestError } from "../../utils/errors.js";
+import BaseController from "../base/BaseController.js";
 
-class ItemController extends BaseController {
+class FarmersPattiController extends BaseController {
+
     create = async (req, res) => {
         try {
             // TODO: Implement create method
             if (!req.body || Object.keys(req.body).length === 0) {
-                throw new BadRequestError("Please enter proper data")
+                throw new BadRequestError('Please Enter proper data');
             }
 
-            const item = await ItemService.create(req.body);
-
-            this.handleSuccess(res, 201, item);
+            this.handleSuccess(res, 201, (await FarmersPattiService.create(req.body)));
 
         } catch (error) {
             this.handleError(res, error);
@@ -21,6 +21,9 @@ class ItemController extends BaseController {
     findById = async (req, res) => {
         try {
             // TODO: Implement findById method
+
+            this.handleSuccess(res, 200, (await FarmersPattiService.findById(req.params.id)));
+
         } catch (error) {
             this.handleError(res, error);
         }
@@ -28,7 +31,21 @@ class ItemController extends BaseController {
 
     findAll = async (req, res) => {
         try {
-            this.handleSuccess(res, 200, (await ItemService.findAll()));
+            // TODO: Implement findAll method
+
+            this.handleSuccess(res, 200, (await FarmersPattiService.findAll()));
+
+        } catch (error) {
+            this.handleError(res, error);
+        }
+    }
+
+    findOne = async (req, res) => {
+        try {
+            // TODO: Implement findAll method
+
+            this.handleSuccess(res, 200, (await FarmersPattiService.findOne(/*Query*/)));
+
         } catch (error) {
             this.handleError(res, error);
         }
@@ -50,4 +67,4 @@ class ItemController extends BaseController {
         }
     }
 }
-export default new ItemController();
+export default new FarmersPattiController();

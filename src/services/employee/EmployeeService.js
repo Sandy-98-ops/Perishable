@@ -136,7 +136,7 @@ class EmployeeService extends BaseService {
             }
 
             const otp = generateOTP();
-            const expiration = new Date(Date.now() + 15 * 60 * 1000); // OTP valid for 15 minutes
+            const expiration = new Date(Date.now() + 60 * 60 * 1000); // OTP valid for 15 minutes
 
             await this.update(employee.emp_id, { otp: otp, otp_expiration: expiration });
 

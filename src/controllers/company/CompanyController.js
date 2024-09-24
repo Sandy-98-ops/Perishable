@@ -4,6 +4,7 @@ import CompanyService from '../../services/company/CompanyService.js';
 import { BadRequestError, NotFoundError } from '../../utils/errors.js';
 
 class CompanyController extends BaseController {
+
     create = async (req, res) => {
         try {
             if (!req.body || Object.keys(req.body).length === 0) {
@@ -39,7 +40,7 @@ class CompanyController extends BaseController {
             if (!req.params.id) {
                 throw new BadRequestError("Please enter Id");
             }
-            
+
             const document = await CompanyService.findById(req.params.id);
             this.handleSuccess(res, 200, document); // Use the handleSuccess method
 
@@ -69,8 +70,7 @@ class CompanyController extends BaseController {
                 throw new BadRequestError('Invalid ID provided');
             }
 
-            await CompanyService.delete(req.params.id);
-            res.status(204).end(); // No content to return on success
+            this.handleSuccess(res, 200, await CompanyService.delete(req.params.id));
         } catch (error) {
             console.error('Error deleting company:', error);
             this.handleError(res, error); // Use the handleError method

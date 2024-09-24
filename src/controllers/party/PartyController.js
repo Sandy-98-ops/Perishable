@@ -1,4 +1,4 @@
-import BaseController from "../base/BaseController.js";import PartyService from "../../services/party/PartyService.js";
+import BaseController from "../base/BaseController.js"; import PartyService from "../../services/party/PartyService.js";
 import { BadRequestError } from "../../utils/errors.js";
 
 class PartyController extends BaseController {
@@ -43,13 +43,14 @@ class PartyController extends BaseController {
     // Retrieve all parties by company
     findByCompany = async (req, res) => {
         try {
-            const { company_id } = req.params;
+            console.log(req.params)
+            const { company } = req.params;
 
-            if (!company_id) {
+            if (!company) {
                 throw new BadRequestError('Company ID is required');
             }
 
-            const parties = await PartyService.findPartiesByCompany(company_id);
+            const parties = await PartyService.findPartiesByCompany(company);
 
             this.handleSuccess(res, 200, parties);
         } catch (error) {
@@ -78,7 +79,7 @@ class PartyController extends BaseController {
                 throw new BadRequestError('Party ID is required');
             }
 
-            const party = await PartyService.findOne(id);
+            const party = await PartyService.findById(id);
 
             if (!party) {
                 throw new NotFoundError('Party not found');

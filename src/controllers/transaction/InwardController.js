@@ -1,17 +1,16 @@
-import BaseController from "../base/BaseController.js"; import ItemService from "../../services/transaction/ItemService.js";
+import InwardService from "../../services/transaction/InwardService.js";
 import { BadRequestError } from "../../utils/errors.js";
+import BaseController from "../base/BaseController.js";
 
-class ItemController extends BaseController {
+class InwardController extends BaseController {
     create = async (req, res) => {
         try {
             // TODO: Implement create method
             if (!req.body || Object.keys(req.body).length === 0) {
-                throw new BadRequestError("Please enter proper data")
+                throw new BadRequestError('Please Enter proper data');
             }
 
-            const item = await ItemService.create(req.body);
-
-            this.handleSuccess(res, 201, item);
+            this.handleSuccess(res, 201, (await InwardService.create(req.body)));
 
         } catch (error) {
             this.handleError(res, error);
@@ -21,6 +20,9 @@ class ItemController extends BaseController {
     findById = async (req, res) => {
         try {
             // TODO: Implement findById method
+
+            this.handleSuccess(res, 200, (await InwardService.findById(req.params.id)));
+
         } catch (error) {
             this.handleError(res, error);
         }
@@ -28,7 +30,21 @@ class ItemController extends BaseController {
 
     findAll = async (req, res) => {
         try {
-            this.handleSuccess(res, 200, (await ItemService.findAll()));
+            // TODO: Implement findAll method
+
+            this.handleSuccess(res, 200, (await InwardService.findAll()));
+
+        } catch (error) {
+            this.handleError(res, error);
+        }
+    }
+
+    findOne = async (req, res) => {
+        try {
+            // TODO: Implement findAll method
+
+            this.handleSuccess(res, 200, (await InwardService.findOne(/*Query*/)));
+
         } catch (error) {
             this.handleError(res, error);
         }
@@ -50,4 +66,4 @@ class ItemController extends BaseController {
         }
     }
 }
-export default new ItemController();
+export default new InwardController();

@@ -21,6 +21,11 @@ import itemRouter from '../routers/transaction/ItemRouter.js';
 import subUnitMasterRouter from '../routers/master/SubUnitMasterRouter.js';
 import employeeRoleRouter from '../routers/employee/EmployeeRoleRouter.js';
 import roleRouter from '../routers/master/RoleRouter.js';
+import chargeRouter from '../routers/master/ChargeRouter.js';
+import inwardRouter from '../routers/transaction/InwardRouter.js';
+import farmersPattiRouter from '../routers/transaction/FarmersPattiRouter.js';
+import customerBillRouter from '../routers/transaction/CustomerBillRouter.js';
+import differencesRouter from '../routers/transaction/DifferencesRouter.js';
 
 const apiRouter = express.Router();
 
@@ -28,7 +33,8 @@ const apiRouter = express.Router();
 apiRouter.use((req, res, next) => {
     const validEndpoints = ['/user', '/party', '/company', '/ledger', '/ledgerCategory', '/ledgerMaster', '/employee', '/expenseCategory', '/expenseEntry',
         '/employeeAdvance', '/employeeAttendance', '/employeePayroll', '/expenseLedger', '/itemCategory', '/unitMaster',
-        '/batch', '/item', '/subUnitMaster', '/employeeRole', '/role'
+        '/batch', '/item', '/subUnitMaster', '/employeeRole', '/role', '/charge', '/inward', '/farmersPatti', '/customerBill',
+        '/differences'
     ];
 
     // Check if the request path starts with one of the valid base paths
@@ -67,4 +73,11 @@ apiRouter.use('/unitMaster', authorizeRoles('admin', 'manager'), unitMasterRoute
 apiRouter.use('/subUnitMaster', authorizeRoles('admin', 'manager'), subUnitMasterRouter);
 apiRouter.use('/batch', authorizeRoles('admin', 'manager'), batchRouter);
 apiRouter.use('/item', authorizeRoles('admin', 'manager'), itemRouter);
+apiRouter.use('/charge', authorizeRoles('admin', 'manager', 'accountant'), chargeRouter);
+apiRouter.use('/inward', authorizeRoles('admin', 'broker'), inwardRouter);
+apiRouter.use('/farmersPatti', authorizeRoles('admin', 'broker'), farmersPattiRouter);
+apiRouter.use('/customerBill', authorizeRoles('admin', 'broker'), customerBillRouter);
+apiRouter.use('/differences', authorizeRoles('admin', 'broker'), differencesRouter);
+
+
 export default apiRouter;

@@ -104,6 +104,10 @@ Employee.init({
         {
             unique: true,
             fields: ['phone_no', 'company_id'],
+        },
+        {
+            unique: true,
+            fields: ['company_id', 'employee_id']
         }
     ],
     hooks: {

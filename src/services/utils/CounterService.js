@@ -10,14 +10,8 @@ class CounterService extends BaseService {
     }
 
     // Method to generate unique transaction ID
-    generateUniqueTransactionId = async (companyId, sequenceType, transaction) => {
+    generateUniqueTransactionId = async (companyId, sequenceType, prefix, transaction) => {
         try {
-
-            const company = await CompanyService.findById(companyId);
-
-            if (!company) {
-                throw new BadRequestError("Company not found")
-            }
 
             let counter = await this.findOne({ company_id: companyId, sequence_type: sequenceType },
                 transaction
@@ -27,7 +21,7 @@ class CounterService extends BaseService {
                 counter = await this.model.create({
                     company_id: companyId,
                     sequence_type: sequenceType,
-                    prefix: 'Emp',
+                    prefix: prefix,
                     sequence_value: 1
                 }, { transaction });
             } else {
@@ -42,7 +36,7 @@ class CounterService extends BaseService {
                 throw new InternalServerError('Failed to generate transaction ID');
             }
 
-            return `${counter.prefix}-${counter.sequence_value}`;
+            return `${counter.prefix}_${counter.sequence_value}`;
         } catch (error) {
             console.error('Error generating unique transaction ID:', error);
             throw new InternalServerError('Error generating unique transaction ID');

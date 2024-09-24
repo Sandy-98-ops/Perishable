@@ -8,15 +8,15 @@ class LedgerCategoryController extends BaseController {
     }
 
     // Find ledger categories by company
-    async findByCompany(req, res) {
+    findByCompany = async (req, res) => {
         try {
-            const companyId = req.params.company_id;
+            const companyId = req.params.company;
 
             if (!companyId) {
                 throw new BadRequestError('Company ID is required');
             }
 
-            const ledgerCategories = await LedgerCategoryService.findAll({ company: companyId });
+            const ledgerCategories = await LedgerCategoryService.findAll({ company_id: companyId });
             this.handleSuccess(res, 200, ledgerCategories);
         } catch (error) {
             console.error('Error finding ledger categories by company:', error);
@@ -25,7 +25,7 @@ class LedgerCategoryController extends BaseController {
     }
 
     // Create a new ledger category
-    async create(req, res) {
+    create = async (req, res) => {
         try {
             if (!req.body || Object.keys(req.body).length === 0) {
                 throw new BadRequestError('Invalid data provided');
@@ -40,7 +40,7 @@ class LedgerCategoryController extends BaseController {
     }
 
     // Find all ledger categories
-    async findAll(req, res) {
+    findAll = async (req, res) => {
         try {
             const query = req.query;
             const ledgerCategories = await LedgerCategoryService.findAll(query);
@@ -57,7 +57,7 @@ class LedgerCategoryController extends BaseController {
     }
 
     // Find a ledger category by ID
-    async findById(req, res) {
+    findById = async (req, res) => {
         try {
             const { id } = req.params;
 
@@ -78,7 +78,7 @@ class LedgerCategoryController extends BaseController {
     }
 
     // Update a ledger category by ID
-    async update(req, res) {
+    update = async (req, res) => {
         try {
             const { id } = req.params;
             const data = req.body;
@@ -100,7 +100,7 @@ class LedgerCategoryController extends BaseController {
     }
 
     // Delete a ledger category by ID
-    async delete(req, res) {
+    delete = async (req, res) => {
         try {
             const { id } = req.params;
 

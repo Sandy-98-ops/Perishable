@@ -7,6 +7,13 @@ import BaseModel from '../base/BaseModel.js';
 class Party extends BaseModel { }
 
 Party.init({
+
+    party_id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false
+    },
     company_id: {
         type: DataTypes.INTEGER,
         allowNull: false,

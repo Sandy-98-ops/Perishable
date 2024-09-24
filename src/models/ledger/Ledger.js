@@ -22,7 +22,7 @@ Ledger.init({
         allowNull: true,
         references: {
             model: Party, // Name of the table for Company model
-            key: 'id',
+            key: 'party_id',
         },
     },
     ledger_master: {
