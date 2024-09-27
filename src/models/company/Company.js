@@ -20,6 +20,7 @@ Company.init({
     },
     email: {
         type: DataTypes.STRING,
+        unique: true,
         allowNull: true,
     },
     phone_no: {
@@ -78,7 +79,15 @@ Company.init({
     digital_sign: {
         type: DataTypes.STRING,
         allowNull: true,
-    }
+    },
+    created_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
+    updated_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
 }, {
     sequelize,
     tableName: 'company',
@@ -90,6 +99,8 @@ Company.init({
             }
         },
     },
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
     // Note: No need to redefine timestamps and date fields here
 });
 

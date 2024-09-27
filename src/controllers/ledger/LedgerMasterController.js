@@ -24,6 +24,7 @@ class LedgerMasterController extends BaseController {
         }
     }
 
+
     // Retrieve a LedgerMaster entry by ID
     findById = async (req, res) => {
         try {
@@ -61,14 +62,7 @@ class LedgerMasterController extends BaseController {
     // Update a LedgerMaster entry by ID
     update = async (req, res) => {
         try {
-            const id = req.params.id;
-            const data = req.body;
-
-            if (!id || !data || Object.keys(data).length === 0) {
-                throw new BadRequestError('ID and data are required');
-            }
-
-            const result = await LedgerMasterService.update(id, data);
+            const result = await LedgerMasterService.update(req.params.id, req.body);
 
             this.handleSuccess(res, 200, result);
 
@@ -93,6 +87,14 @@ class LedgerMasterController extends BaseController {
 
         } catch (error) {
             console.error('Error deleting ledger master:', error);
+            this.handleError(res, error);
+        }
+    }
+
+    findByCompanyId = async (req, res) => {
+        try {
+            this.handleSuccess(res, 200, await LedgerMasterService.findByCompanyId(req.params.company_id));
+        } catch (error) {
             this.handleError(res, error);
         }
     }

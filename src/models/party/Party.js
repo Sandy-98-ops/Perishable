@@ -23,7 +23,7 @@ Party.init({
         },
     },
     name: {
-        type: DataTypes.JSON,
+        type: DataTypes.STRING,
         allowNull: false,
     },
     phone_no: {
@@ -71,11 +71,20 @@ Party.init({
     balance: {
         type: DataTypes.FLOAT,
         defaultValue: 0.0
+    },
+    created_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
+    updated_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
     }
 }, {
     sequelize,
     modelName: 'Party',
-    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
     indexes: [
         { fields: ['company_id'] },
         { unique: true, fields: ['company_id', 'phone_no'] },

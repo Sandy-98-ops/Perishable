@@ -67,13 +67,21 @@ ExpenseEntry.init({
             model: Employee,
             key: 'emp_id',
         },
-    }
+    },
+    created_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
+    updated_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
 }, {
     sequelize,
     modelName: 'ExpenseEntry',
     tableName: 'expense_entries', // Ensure table name is correctly pluralized and in snake_case
-    timestamps: true,
-    underscored: true, // Use snake_case for column names
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
 });
 
 export default ExpenseEntry;

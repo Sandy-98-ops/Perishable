@@ -3,6 +3,7 @@ import BankLedger from '../../models/ledger/BankLedger.js';
 import Counter from '../../utils/Counter.js';
 import { InternalServerError } from '../../utils/errors.js';
 import { withTransaction } from '../../utils/transactionHelper.js';
+import { where } from "sequelize";
 
 class BankLedgerService extends BaseService {
     constructor() {
@@ -69,6 +70,7 @@ class BankLedgerService extends BaseService {
                 const bankLedger = await BankLedger.create({
                     company_id: data.company_id,
                     date: data.date,
+                    reference_id: data.transaction_id,
                     description: data.description,
                     transaction_id: uniqueTransactionId,
                     payment_mode: data.payment_mode,
@@ -83,6 +85,41 @@ class BankLedgerService extends BaseService {
                 throw new InternalServerError('Error creating bank ledger');
             }
         });
+    }
+
+
+    updateBankLedger = async (id, data, transaction) => {
+
+        const recentEntry = await this.findOne({ company_id: data.company_id }, [['created_at', 'desc']]);
+
+        const previousBalance = recentEntry ? recentEntry.balance : 0;
+
+        let newBalance = 0;
+        if (data.debit > 0) {
+            newBalance = previousBalance - data.debit;
+        } else {
+            newBalance = previousBalance + data.credit;
+        }
+
+        const bankLedger = await this.model.update(
+            {
+                company_id: data.company_id,
+                date: data.date,
+                reference_id: data.reference_id,
+                description: data.description,
+                transaction_id: data.transaction_id,
+                payment_mode: data.payment_mode,
+                credit: data.credit,
+                debit: data.debit,
+                balance: newBalance
+            },
+            {
+                where: { id: data.id }, // The correct placement of the 'where' clause
+                transaction // Pass the transaction object within the options
+            }
+        );
+
+        return bankLedger;
     }
 }
 

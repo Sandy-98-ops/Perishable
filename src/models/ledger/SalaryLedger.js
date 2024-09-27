@@ -60,6 +60,14 @@ SalaryLedger.init({
         type: DataTypes.FLOAT,
         defaultValue: 0,
     },
+    created_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
+    updated_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
 }, {
     sequelize,
     modelName: 'Salary_Ledger', // Consistent naming

@@ -18,7 +18,7 @@ ExpenseCategory.init({
             model: Company, // Name of the table for Company model
             key: 'company_id',
         },
-        allowNull: true,
+        allowNull: false,
     },
     category_name: {
         type: DataTypes.STRING,
@@ -31,11 +31,20 @@ ExpenseCategory.init({
     maxAmount: {
         type: DataTypes.FLOAT,
         allowNull: true,
-    }
+    },
+    created_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
+    updated_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
 }, {
     sequelize,
     modelName: 'Expense_Category',
-    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
     indexes: [
         {
             fields: ['company_id'],

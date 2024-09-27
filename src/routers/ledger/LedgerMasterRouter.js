@@ -3,9 +3,11 @@ import LedgerMasterController from '../../controllers/ledger/LedgerMasterControl
 const ledgerMasterRouter = express.Router();
 
 // Public routes
-ledgerMasterRouter.post('/', LedgerMasterController.create); // Registration route
-ledgerMasterRouter.get('/', LedgerMasterController.findAll);
-ledgerMasterRouter.get('/:id', LedgerMasterController.findById); // Read a specific user
-ledgerMasterRouter.put('/:id', LedgerMasterController.update); // Update a specific user
-ledgerMasterRouter.delete('/:id', LedgerMasterController.delete); // Delete a specific user
+ledgerMasterRouter.post('/', LedgerMasterController.create) // Registration route
+.get('/', LedgerMasterController.findAll)
+.get('/:id', LedgerMasterController.findById) // Read a specific user
+.put('/:id', LedgerMasterController.update) // Update a specific user
+.delete('/:id', LedgerMasterController.delete) // Delete a specific user
+.get('/findByCompany/:company_id', LedgerMasterController.findByCompanyId);
+
 export default ledgerMasterRouter;

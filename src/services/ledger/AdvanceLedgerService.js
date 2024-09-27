@@ -76,7 +76,7 @@ class AdvanceLedgerService extends BaseService {
             }
 
             // Create advance ledger entry
-            const advanceLedger = await AdvanceLedger.create({
+            const advanceLedger = await this.create({
                 employee_id: data.employee_id,
                 company_id: data.company_id,
                 advance_id: data.advance_id, // Use correct field name
@@ -87,7 +87,7 @@ class AdvanceLedgerService extends BaseService {
                 debit,
                 credit,
                 balance: newBalance
-            }, { transaction });
+            }, transaction);
 
             let cashLedger = null, bankLedger = null;
 
@@ -97,7 +97,7 @@ class AdvanceLedgerService extends BaseService {
                     date: data.date,
                     description: data.description,
                     payment_mode: data.payment_mode,
-                    reference_id: advanceLedger.transaction_id,
+                    transaction_id: advanceLedger.transaction_id,
                     debit: 0,
                     credit: 0
                 };

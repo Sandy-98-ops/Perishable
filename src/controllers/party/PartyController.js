@@ -1,5 +1,6 @@
 import BaseController from "../base/BaseController.js"; import PartyService from "../../services/party/PartyService.js";
-import { BadRequestError } from "../../utils/errors.js";
+import { BadRequestError, NotFoundError } from "../../utils/errors.js";
+import EmployeeService from "../../services/employee/EmployeeService.js";
 
 class PartyController extends BaseController {
     constructor() {
@@ -25,17 +26,19 @@ class PartyController extends BaseController {
     // Retrieve a party by name
     findByName = async (req, res) => {
         try {
-            const { name } = req.params;
-
-            if (!name || typeof name !== 'string') {
-                throw new BadRequestError('Invalid name parameter');
-            }
-
-            const party = await PartyService.findPartyByName(name);
-
-            this.handleSuccess(res, 200, party);
+            this.handleSuccess(res, 200,
+                await PartyService.findPartyByName(req.params.name, req.params.company_id));
         } catch (error) {
             console.error('Error finding party by name:', error);
+            this.handleError(res, error);
+        }
+    }
+
+
+    findByPhoneNo = async (req, res) => {
+        try {
+            this.handleSuccess(res, 200, await PartyService.findPartyByPhoneNo(req.params.phone_no, req.params.company_id));
+        } catch (error) {
             this.handleError(res, error);
         }
     }

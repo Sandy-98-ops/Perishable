@@ -36,12 +36,20 @@ LedgerMaster.init({
         type: DataTypes.STRING,
         allowNull: true, // Optional field
     },
+    created_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
+    updated_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
 }, {
     sequelize,
     modelName: 'LedgerMaster',
     tableName: 'ledger_masters', // Use underscores for table name
-    timestamps: true,
-    underscored: true, // Ensure snake_case for column names
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
 });
 
 // Define associations

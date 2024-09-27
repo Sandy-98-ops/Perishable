@@ -22,6 +22,17 @@ class EmployeeController extends BaseController {
         }
     }
 
+    findByName = async (req, res) => {
+        try { 
+            this.handleSuccess(res, 200,
+                await EmployeeService.findEmployeeByName(req.params.name, req.params.company_id));
+        }
+        catch (error) {
+            console.error('Error finding employee by name:', error);
+            this.handleError(res, error);
+        }
+    };
+
     // Retrieve all employees
     findAll = async (req, res) => {
         try {

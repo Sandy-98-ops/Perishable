@@ -3,50 +3,21 @@ import Party from "../../models/party/Party.js";
 import Counter from "../../utils/Counter.js";
 import Ledger from "../../models/ledger/Ledger.js";
 import LedgerService from "../ledger/LedgerService.js";
-import { InternalServerError, BadRequestError } from "../../utils/errors.js";
+import { InternalServerError, BadRequestError, NotFoundError } from "../../utils/errors.js";
 import { withTransaction } from "../../utils/transactionHelper.js";
+import { Op, ValidationError } from 'sequelize';
+import CounterService from '../utils/CounterService.js';
+import { formatDatetoDBDate, formatDateToDDMMYYYY } from '../../utils/dateUtils.js';
 
 class PartyService extends BaseService {
     constructor() {
-        super(Party);
+        super(Party, 'party_id');
     }
 
-    // Method to generate a unique account number
-    generateAccountNumber = async (company_id, transaction) => {
-        try {
-            const sequence_type = 'party';
-            let counter = await Counter.findOne({
-                where: { company_id, sequence_type },
-                transaction
-            });
-
-            if (!counter) {
-                counter = await Counter.create({
-                    company_id,
-                    sequence_type,
-                    sequence_value: 1
-                }, { transaction });
-            } else {
-                counter = await counter.increment('sequence_value', { transaction });
-                counter = await Counter.findOne({
-                    where: { company_id, sequence_type },
-                    transaction
-                });
-            }
-
-            if (!counter) {
-                throw new InternalServerError('Failed to generate account number');
-            }
-
-            return counter.sequence_value;
-        } catch (error) {
-            console.error('Error generating account number:', error);
-            throw new InternalServerError(`Error generating account number: ${error.message}`);
-        }
-    }
 
     // Method to create a party and initial ledger entry
     createParty = async (partyData) => {
+
         if (!partyData || Object.keys(partyData).length === 0) {
             throw new BadRequestError('Invalid data provided');
         }
@@ -55,11 +26,17 @@ class PartyService extends BaseService {
             const { company_id, credit_info } = partyData;
 
             // Generate a sequential account number for the specific company
-            const account_no = await this.generateAccountNumber(company_id, transaction);
+            const account_no = await CounterService.generateAccountNumber('party', transaction);
             partyData.account_no = account_no;
 
+            const existingParty = await this.findOne({ phone_no: partyData.phone_no });
+
+            if (existingParty) {
+                throw new ValidationError("Phone Number already exists");
+            }
+
             // Create the party document
-            const party = await this.model.create(partyData, { transaction });
+            const party = await this.create(partyData, transaction);
 
             // Create the initial ledger entry if credit_info is provided
             if (credit_info && credit_info.opening_balance !== undefined) {
@@ -74,10 +51,10 @@ class PartyService extends BaseService {
     createInitialLedgerEntry = async (companyId, partyDoc, creditInfo, transaction) => {
         try {
             const ledgerEntry = {
-                party_id: partyDoc.id,
+                party_id: partyDoc.party_id,
                 company_id: partyDoc.company_id,
                 ledger_master: null, // Set to a valid ID or null if not applicable
-                date: new Date(),
+                date: formatDatetoDBDate(new Date()),
                 description: {
                     'en': 'Initial opening balance',
                     'kn': 'ಪ್ರಾರಂಭಿಕ ಶೇಷ',
@@ -85,7 +62,6 @@ class PartyService extends BaseService {
                     'hi': 'प्रारंभिक शेष',
                     'te': 'ప్రాథమిక బాలెన్స్'
                 },
-                transaction_id: await LedgerService.generateUniqueTransactionId(companyId, transaction),
                 credit: creditInfo.iPay ? 0 : creditInfo.opening_balance,
                 debit: creditInfo.iPay ? creditInfo.opening_balance : 0,
                 balance: creditInfo.iPay ? -creditInfo.opening_balance : creditInfo.opening_balance,
@@ -96,35 +72,33 @@ class PartyService extends BaseService {
                 throw new BadRequestError('Ledger entry must include a date and description');
             }
 
-            await Ledger.create(ledgerEntry, { transaction });
+            const noPrototypeObject = Object.assign(Object.create(null), ledgerEntry);
+
+
+            await LedgerService.create(noPrototypeObject, { transaction });
         } catch (error) {
             console.error('Error creating initial ledger entry:', error);
             throw new InternalServerError(`Error creating initial ledger entry: ${error.message}`);
         }
     }
 
-    // Method to find party by name
-    findPartyByName = async (name) => {
-        if (!name || typeof name !== 'string') {
-            throw new BadRequestError('Invalid name parameter');
+    findPartyByName = async (name, company_id) => {
+
+        if ((!name || typeof name !== 'string') && !company_id) {
+            throw new BadRequestError('Invalid name parameter / Name is not provided / Company id is not provided');
         }
 
-        const party = await Party.findOne({
-            where: {
-                [Op.or]: [
-                    { 'name.en': { [Op.iLike]: `%${name}%` } },
-                    { 'name.hi': { [Op.iLike]: `%${name}%` } },
-                    { 'name.kn': { [Op.iLike]: `%${name}%` } },
-                    { 'name.mr': { [Op.iLike]: `%${name}%` } }
-                ]
-            }
-        });
+        const party = await this.findAll({ name: { [Op.like]: `%${name}%` }, company_id: company_id });
 
         if (!party) {
             throw new NotFoundError('Party not found');
         }
 
         return party;
+    };
+
+    findPartyByPhoneNo = async (phone_no, company_id) => {
+        return await this.findOne({ phone_no: phone_no, company_id: company_id });
     }
 
     // Method to find parties by company

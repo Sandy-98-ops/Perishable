@@ -10,40 +10,11 @@ class EmployeeLedgerService extends BaseService {
         super(EmployeeLedger, 'employee_ledger_id')
     }
 
-    // Method to generate unique transaction ID
-    generateUniqueTransactionId = async (company_id, transaction) => {
-        try {
-            const sequence_type = 'employee_ledger';
-
-            let counter = await CounterService.findOne({ company_id: company_id, sequence_type: sequence_type }, { transaction });
-
-            if (!counter) {
-                counter = await CounterService.create({
-                    company_id: company_id,
-                    sequence_type: sequence_type,
-                    prefix: 'Emp_Ledger',
-                    sequence_value: 1
-                }, { transaction });
-            } else {
-                await counter.increment('sequence_value', { transaction });
-                counter = await CounterService.findOne({ company_id: company_id, sequence_type: sequence_type }, { transaction });
-            }
-
-            if (!counter) {
-                throw new InternalServerError('Failed to generate transaction ID');
-            }
-
-            return `${counter.prefix}-${counter.sequence_value}`;
-        } catch (error) {
-            console.error('Error generating unique transaction ID:', error);
-            throw new InternalServerError(`Error generating unique transaction ID: ${error.message}`);
-        }
-    }
-
     createEmployeeLedger = async (data) => {
         return withTransaction(async (transaction) => {
             try {
-                const uniqueTransactionId = await this.generateUniqueTransactionId(data.company_id, transaction);
+                const uniqueTransactionId = await
+                    CounterService.generateUniqueTransactionId(data.company_id, 'employee_ledger', 'Emp_Ledger', transaction);
 
                 const recentEntry = await this.model.findOne({
                     where: { company_id: data.company_id },

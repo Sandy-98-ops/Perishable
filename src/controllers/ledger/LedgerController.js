@@ -8,7 +8,7 @@ class LedgerController extends BaseController {
     }
 
     // Create a new ledger entry
-    async create(req, res) {
+    create = async (req, res) => {
         try {
             if (!req.body || Object.keys(req.body).length === 0) {
                 throw new BadRequestError('Invalid data provided');
@@ -23,7 +23,7 @@ class LedgerController extends BaseController {
     }
 
     // Find ledger records by party
-    async findLedgerByParty(req, res) {
+    findLedgerByParty = async (req, res) => {
         try {
             const { party } = req.params;
 
@@ -44,7 +44,7 @@ class LedgerController extends BaseController {
     }
 
     // Find a ledger record by ID
-    async findById(req, res) {
+    findById = async (req, res) => {
         try {
             const { id } = req.params;
 
@@ -65,7 +65,7 @@ class LedgerController extends BaseController {
     }
 
     // Find all ledger records with optional query parameters
-    async findAll(req, res) {
+    findAll = async (req, res) => {
         try {
             const query = req.query; // Get query parameters from the request
             const ledgers = await LedgerService.findAll(query);
@@ -82,7 +82,7 @@ class LedgerController extends BaseController {
     }
 
     // Update a ledger record by ID
-    async update(req, res) {
+    update = async (req, res) => {
         try {
             const { id } = req.params;
             const data = req.body;
@@ -91,7 +91,7 @@ class LedgerController extends BaseController {
                 throw new BadRequestError('ID and data are required');
             }
 
-            const updatedLedger = await LedgerService.update(id, data);
+            const updatedLedger = await LedgerService.updateDoc(id, data);
             if (!updatedLedger) {
                 throw new NotFoundError('Ledger record not found');
             }
@@ -104,7 +104,7 @@ class LedgerController extends BaseController {
     }
 
     // Delete a ledger record by ID
-    async delete(req, res) {
+    delete = async (req, res) => {
         try {
             const { id } = req.params;
 

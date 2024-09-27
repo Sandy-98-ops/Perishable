@@ -15,7 +15,7 @@ class CompanyController extends BaseController {
                 throw new BadRequestError('Please enter Phone Number')
             }
 
-            const document = await CompanyService.create(req.body);
+            const document = await CompanyService.createCompany(req.body);
             this.handleSuccess(res, 201, document); // Use the handleSuccess method for successful responses
         } catch (error) {
             console.error('Error creating company:', error);

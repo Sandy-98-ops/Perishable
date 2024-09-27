@@ -27,13 +27,21 @@ UnitMaster.init({
     conversion_ratio: {
         type: DataTypes.DECIMAL,
         allowNull: false,
+    },
+    created_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
+    updated_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
     }
 }, {
     sequelize,
     modelName: 'UnitMaster',
     tableName: 'unit_masters', // Use plural and underscores for table name
-    timestamps: true, // Ensure timestamps are enabled
-    underscored: true, // Use snake_case for column names
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
     indexes: [
         {
             unique: true,

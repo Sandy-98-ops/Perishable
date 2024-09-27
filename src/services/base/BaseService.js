@@ -1,5 +1,6 @@
 import { NotFoundError, BadRequestError, ValidationError } from '../../utils/errors.js';
 import { withTransaction } from '../../utils/transactionHelper.js';
+import { getCurrentUser } from '../../utils/context.js';
 
 class BaseService {
     constructor(model, primaryKey = 'id') {
@@ -7,59 +8,89 @@ class BaseService {
         this.primaryKey = primaryKey;
     }
 
-    // Create method with transaction support
-    create = async (data, transaction) => {
+    // Helper method to get current user data
+    getCurrentUserData() {
+        const currentUser = getCurrentUser();
+
+        return {
+            companyId: currentUser.company_id,
+            userId: currentUser.id,
+        };
+    }
+
+    // Create method with optional company_id
+    create = async (data, transaction, includeCompanyId = true) => {
         if (!data || Object.keys(data).length === 0) {
             throw new BadRequestError('Invalid data provided');
         }
 
-        // Optionally include created_by if userId is provided
-        // const dataWithUser = { ...data, created_by: userId == undefined ? null : userId };
+        const { userId } = this.getCurrentUserData();
+        const companyId = includeCompanyId ? this.getCurrentUserData().companyId : undefined;
 
         try {
-            // Use the provided transaction or create a new one
-            if (!transaction) {
-                return await withTransaction(async (t) => {
-                    return await this.model.create(data, { t });
-                });
-            } else {
-                return await this.model.create(data, { transaction });
-            }
+            const options = {
+                transaction: transaction || undefined,
+                ...(!transaction && { transaction: await withTransaction() })
+            };
+            return await this.model.create({
+                ...data,
+                ...(includeCompanyId && { company_id: companyId }),
+                created_by: userId
+            }, options);
         } catch (error) {
             throw new ValidationError(`Failed to create document: ${error.message}`);
         }
     }
 
-    // Find by ID
-    findById = async (id) => {
+    // Find by ID with optional company_id
+    findById = async (id, includeCompanyId = true) => {
         if (!id) {
             throw new BadRequestError('ID is required');
         }
 
+        const { companyId } = includeCompanyId ? this.getCurrentUserData() : { companyId: undefined };
+
         try {
-            const document = await this.model.findByPk(id);
+            const document = await this.model.findOne({
+                where: {
+                    [this.primaryKey]: id,
+                    ...(includeCompanyId && { company_id: companyId })
+                }
+            });
+
             return document;
         } catch (error) {
             throw new ValidationError(`Failed to retrieve document: ${error.message}`);
         }
     }
 
-    // Find one document based on a query
-    findOne = async (query) => {
+    // Find one document with optional company_id
+    findOne = async (query, order = [], includeCompanyId = true) => {
         if (!query || Object.keys(query).length === 0) {
             throw new BadRequestError('Query object is required');
         }
 
+        if (includeCompanyId) {
+            const { companyId } = this.getCurrentUserData();
+            query.company_id = companyId;
+        }
+
         try {
-            const document = await this.model.findOne({ where: query });
+            const document = await this.model.findOne({ where: query, order });
+
             return document;
         } catch (error) {
             throw new ValidationError(`Failed to retrieve document: ${error.message}`);
         }
     }
 
-    // Find all or by query
-    findAll = async (query = {}) => {
+    // Find all documents with optional company_id
+    findAll = async (query = {}, includeCompanyId = true) => {
+        if (includeCompanyId) {
+            const { companyId } = this.getCurrentUserData();
+            query.company_id = companyId;
+        }
+
         try {
             return await this.model.findAll({ where: query });
         } catch (error) {
@@ -67,80 +98,67 @@ class BaseService {
         }
     }
 
-    // Update method with transaction support
-    update = async (id, data, transaction) => {
+    // Update method with optional company_id
+    update = async (id, data, transaction, includeCompanyId = true) => {
         if (!id || !data || Object.keys(data).length === 0) {
             throw new BadRequestError('Invalid ID or data provided');
         }
 
-        // Optionally include updated_by if userId is provided
-        // const dataWithUser = { ...data, updated_by: userId };
+        const { userId } = this.getCurrentUserData();
+        const companyId = includeCompanyId ? this.getCurrentUserData().companyId : undefined;
 
         try {
-            // Use the provided transaction or create a new one
-            if (!transaction) {
-                return await withTransaction(async (t) => {
-                    const [affectedRows] = await this.model.update(data, {
-                        where: { [this.primaryKey]: id },
-                        t
-                    });
+            const updatedData = {
+                ...data,
+                ...(includeCompanyId && { updated_by: userId }), // Include updated_by field
+            };
 
-                    if (affectedRows === 0) {
-                        throw new NotFoundError('Document not found');
-                    }
+            const options = {
+                ...(transaction && { transaction }) // Only include transaction if it's provided
+            };
 
-                    return { message: 'Document updated successfully' };
-                });
-            } else {
-                const [affectedRows] = await this.model.update(data, {
-                    where: { [this.primaryKey]: id },
-                    transaction
-                });
+            const [affectedRows] = await this.model.update(updatedData, {
+                where: {
+                    [this.primaryKey]: id,
+                    ...(includeCompanyId && { company_id: companyId }),
+                },
+                ...options,
+            });
 
-                if (affectedRows === 0) {
-                    throw new NotFoundError('Document not found');
-                }
-
-                return { message: 'Document updated successfully' };
+            if (affectedRows === 0) {
+                throw new NotFoundError('Document not found or no changes made');
             }
+
+            return { message: 'Document updated successfully' };
         } catch (error) {
+            console.error(`Update failed for ID ${id}: ${error.message}`);
             throw new ValidationError(`Failed to update document: ${error.message}`);
         }
     }
 
-    // Delete method with transaction support
-    delete = async (id, transaction) => {
+    // Delete method with optional company_id
+    delete = async (id, transaction, includeCompanyId = true) => {
         if (!id) {
             throw new BadRequestError('Invalid ID provided');
         }
 
+        const { companyId } = includeCompanyId ? this.getCurrentUserData() : { companyId: undefined };
+
         try {
-            // Use the provided transaction or create a new one
-            if (!transaction) {
-                return await withTransaction(async (t) => {
-                    const deletedRows = await this.model.destroy({
-                        where: { [this.primaryKey]: id },
-                        transaction: t
-                    });
+            const options = { transaction: transaction || undefined };
+            const deletedRows = await this.model.destroy({
+                where: {
+                    [this.primaryKey]: id,
+                    ...(includeCompanyId && { company_id: companyId }),
+                },
+                ...options,
+            });
 
-                    if (deletedRows === 0) {
-                        throw new NotFoundError('Document not found');
-                    }
-
-                    return deletedRows;
-                });
-            } else {
-                const deletedRows = await this.model.destroy({
-                    where: { [this.primaryKey]: id },
-                    transaction
-                });
-
-                if (deletedRows === 0) {
-                    throw new NotFoundError('Document not found');
-                }
-
-                return deletedRows;
+            if (deletedRows === 0) {
+                throw new NotFoundError('Document not found');
             }
+
+            return deletedRows;
         } catch (error) {
             throw new ValidationError(`Failed to delete document: ${error.message}`);
         }

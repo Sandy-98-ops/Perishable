@@ -33,13 +33,21 @@ User.init({
         type: DataTypes.STRING,
         defaultValue: 'user', // Default role
     },
+    created_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
+    updated_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    }
     // Add other fields as needed
 }, {
     sequelize,
     modelName: 'User',
     tableName: 'users', // Use plural and underscore for table name
-    timestamps: true, // Automatically adds createdAt and updatedAt timestamps
-    underscored: true, // Use snake_case for column names
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
 });
 
 export default User;

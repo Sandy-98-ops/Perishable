@@ -23,6 +23,10 @@ BankLedger.init({
         type: DataTypes.STRING, // Changed to STRING for simplicity unless JSON is necessary
         allowNull: false,
     },
+    reference_id: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
     transaction_id: {
         type: DataTypes.STRING,
         allowNull: true,
@@ -46,6 +50,14 @@ BankLedger.init({
     balance: {
         type: DataTypes.FLOAT,
         defaultValue: 0,
+    },
+    created_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
+    updated_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
     },
 }, {
     sequelize,

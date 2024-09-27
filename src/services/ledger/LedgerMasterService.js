@@ -4,6 +4,7 @@ import Ledger from "../../models/ledger/Ledger.js";
 import LedgerService from "./LedgerService.js"; // Import LedgerService or similar
 import { BadRequestError, InternalServerError } from "../../utils/errors.js";
 import { withTransaction } from "../../utils/transactionHelper.js";
+import CounterService from '../utils/CounterService.js';
 
 class LedgerMasterService extends BaseService {
     constructor() {
@@ -21,35 +22,38 @@ class LedgerMasterService extends BaseService {
             const ledgerMaster = await this.model.create(data, { transaction });
 
             // Generate a unique transaction ID
-            const transactionId = await LedgerService.generateUniqueTransactionId(data.company, transaction);
 
             // Define the ledger entry
             const ledgerEntry = {
                 ledgerMasterId: ledgerMaster.id, // Assuming Sequelize uses id for primary keys
-                company: data.company,
+                company_id: data.company_id,
                 ledgerId: '66d69b876011e5adde1ef28d', // Ensure this ID is valid or generate it
-                ledgerData: [{
-                    date: new Date(),
-                    transactionId,
-                    credit: 0,
-                    debit: 0,
-                    balance: 0,
-                    description: {
-                        'en': 'Initial opening balance',
-                        'kn': 'ಪ್ರಾರಂಭಿಕ ಶೇಷ',
-                        'mr': 'प्रारंभिक शिल्लक',
-                        'hi': 'प्रारंभिक शेष',
-                        'te': 'ప్రాథమిక బాలెన్స్'
-                    }
-                }]
+                date: new Date(),
+                credit: 0,
+                debit: 0,
+                balance: 0,
+                description: {
+                    'en': 'Initial opening balance',
+                    'kn': 'ಪ್ರಾರಂಭಿಕ ಶೇಷ',
+                    'mr': 'प्रारंभिक शिल्लक',
+                    'hi': 'प्रारंभिक शेष',
+                    'te': 'ప్రాథమిక బాలెన్స్'
+                }
             };
 
             // Create Ledger entry within the same transaction
-            await Ledger.create(ledgerEntry, { transaction });
+            await LedgerService.create(ledgerEntry, transaction);
 
             return ledgerMaster;
         });
     }
+
+    findByCompanyId = async (company_id) => {
+        return await this.findOne({ company_id: company_id });
+    }
+
 }
+
+
 
 export default new LedgerMasterService();

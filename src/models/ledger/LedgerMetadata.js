@@ -41,11 +41,20 @@ LedgerMetaData.init({
             key: 'id',
         },
         allowNull: false,
-    }
+    },
+    created_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
+    updated_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
 }, {
     sequelize,
     modelName: 'Ledger_MetaData',
-    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
 });
 
 export default LedgerMetaData;

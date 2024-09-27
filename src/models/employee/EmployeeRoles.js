@@ -39,7 +39,15 @@ EmployeeRoles.init({
     updated_by: {
         type: DataTypes.INTEGER,
         allowNull: true,
-    }
+    },
+    created_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
+    updated_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
 }, {
     sequelize,
     tableName: 'employee_roles', // Ensure this matches your actual table name

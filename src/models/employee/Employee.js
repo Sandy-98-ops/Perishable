@@ -39,10 +39,12 @@ Employee.init({
     email: {
         type: DataTypes.STRING,
         allowNull: true,
+        unique: true
     },
     phone_no: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: true
     },
     address: {
         type: DataTypes.STRING,
@@ -91,20 +93,21 @@ Employee.init({
     otp_expiration: {
         type: DataTypes.DATE,
         allowNull: true
-    }
+    },
+    created_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
+    updated_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
 }, {
     sequelize,
     modelName: 'Employee',
-    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
     indexes: [
-        {
-            unique: true,
-            fields: ['email', 'company_id'],
-        },
-        {
-            unique: true,
-            fields: ['phone_no', 'company_id'],
-        },
         {
             unique: true,
             fields: ['company_id', 'employee_id']

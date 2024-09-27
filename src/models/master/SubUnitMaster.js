@@ -34,13 +34,21 @@ SubUnitMaster.init({
     conversion_ratio: {
         type: DataTypes.DECIMAL,
         allowNull: true, // Assuming it may be optional or default to null
+    },
+    created_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
+    updated_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
     }
 }, {
     sequelize,
     modelName: 'SubUnitMaster',
     tableName: 'sub_unit_masters',
-    timestamps: true,
-    underscored: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
 });
 
 export default SubUnitMaster;

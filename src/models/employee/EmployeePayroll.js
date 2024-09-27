@@ -80,12 +80,21 @@ EmployeePayroll.init({
     date: {
         type: DataTypes.DATE,
         allowNull: false
-    }
+    },
+    created_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
+    updated_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
 }, {
     sequelize,
     modelName: 'Employee_Payroll',
     tableName: "employee_payroll",
-    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
 });
 
 // Define associations

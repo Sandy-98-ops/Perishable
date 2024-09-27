@@ -38,11 +38,20 @@ EmployeeAttendance.init({
     description: {
         type: DataTypes.STRING,
         allowNull: true,
-    }
+    },
+    created_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
+    updated_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
 }, {
     sequelize,
     modelName: 'Employee_Attendance',
-    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
 });
 
 // Define associations

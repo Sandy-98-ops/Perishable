@@ -49,7 +49,7 @@ class BaseController {
             message = error.message;
         } else if (error instanceof InternalServerError) {
             statusCode = error.statusCode;
-            message = error.message;
+            message = `${error.message}`;
         } else if (error instanceof NotImplementedError) {
             statusCode = error.statusCode;
             message = error.message;

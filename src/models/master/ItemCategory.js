@@ -33,6 +33,14 @@ ItemCategory.init({
     image: {
         type: DataTypes.STRING,
         allowNull: true,
+    },
+    created_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
+    updated_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
     }
 }, {
     sequelize,
@@ -42,8 +50,8 @@ ItemCategory.init({
         unique: true,
         fields: ['company_id', 'category_name'], // Unique constraint for the combination of company and category_name
     }],
-    timestamps: true,
-    underscored: true, // Ensure snake_case for column names
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
 });
 
 // Define associations

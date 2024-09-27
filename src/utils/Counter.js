@@ -1,8 +1,9 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/db.js';
 import Company from '../models/company/Company.js';
+import BaseModel from '../models/base/BaseModel.js';
 
-class Counter extends Model { }
+class Counter extends BaseModel { }
 
 Counter.init({
     counter_id: {
@@ -22,6 +23,7 @@ Counter.init({
     sequence_type: {
         type: DataTypes.STRING,
         allowNull: false,
+        defaultValue: ''
     },
     sequence_value: {
         type: DataTypes.INTEGER,
@@ -38,17 +40,27 @@ Counter.init({
     financial_year: {
         type: DataTypes.STRING,
         allowNull: true,
+    },
+    created_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
+    updated_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
     }
 }, {
     sequelize,
     modelName: 'Counter',
-    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
     indexes: [
         {
             unique: true,
             fields: ['company_id', 'sequence_type']
         }
-    ]
+    ],
+
 });
 
 export default Counter;

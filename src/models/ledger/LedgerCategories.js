@@ -47,12 +47,20 @@ LedgerCategory.init({
         onDelete: 'SET NULL', // Handle deletions if LedgerMaster is removed
         onUpdate: 'CASCADE', // Handle updates if LedgerMaster ID changes
     },
+    created_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
+    updated_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
 }, {
     sequelize,
     modelName: 'LedgerCategory',
     tableName: 'ledger_categories', // Use underscores for table name
-    timestamps: true,
-    underscored: true, // Ensure snake_case for column names
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
 });
 
 // Define associations

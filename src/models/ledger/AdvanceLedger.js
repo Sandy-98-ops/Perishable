@@ -64,6 +64,14 @@ AdvanceLedger.init({
         type: DataTypes.FLOAT,
         defaultValue: 0,
     },
+    created_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
+    updated_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
 }, {
     sequelize,
     modelName: 'Advance_Ledger',

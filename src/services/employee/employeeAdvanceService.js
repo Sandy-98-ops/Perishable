@@ -62,6 +62,53 @@ class EmployeeAdvanceService extends BaseService {
         });
     }
 
+    //update 
+
+    updateEmployeeAdvance = async (id, data) => {
+        return withTransaction(async (transaction) => {
+
+            const existingAdvance = await this.findById(id);
+
+            const employeeAdvance = await this.update(id, data, transaction)
+
+            const existingAdvanceLedger = await AdvanceLedgerService.findone({ advance_id: id });
+
+
+            // Updating Advance Ledger
+            const recentAdvanceLedger = await AdvanceLedgerService.findone(
+                { company_id: data.company_id },
+                [['created_at', 'DESC']]);
+
+
+            const previousBalance = recentAdvanceLedger ? recentAdvanceLedger.balance : 0;
+
+            const newBalance = 0;
+
+            if (existingAdvance.advance_amount > data.advance_amount) {
+                newBalance = previousBalance - data.advance_amount;
+            } else {
+                newBalance = data.advance_amount - previousBalance;
+            }
+
+            // Prepare data for AdvanceLedger
+            const advanceLedgerData = {
+                employee_id: employeeAdvance.employee_id,
+                company_id: employeeAdvance.company_id,
+                advance_id: employeeAdvance.id, // Use advance.id as advance_id
+                date: employeeAdvance.advance_date,
+                description: `Advance of ${employeeAdvance.advance_amount} for employee ${employeeAdvance.employee_id}`,
+                credit: employeeAdvance.advance_amount,
+                debit: 0.0,
+                balance: newBalance,
+                payment_mode: employeeAdvance.payment_mode
+            };
+
+            advanceLedgerData = await AdvanceLedgerService.update(existingAdvanceLedger.id, advanceLedgerData, transaction);
+        })
+
+
+    }
+
     // Custom method to find by company
     findByCompany = async (companyId) => {
         return this.model.findAll({ where: { company_id: companyId } });

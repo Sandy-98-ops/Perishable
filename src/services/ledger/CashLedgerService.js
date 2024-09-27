@@ -49,11 +49,10 @@ class CashLedgerService extends BaseService {
             try {
                 const uniqueTransactionId = await this.generateUniqueTransactionId(data.company_id, transaction);
 
-                const recentEntry = await CashLedger.findOne({
-                    where: { company_id: data.company_id },
-                    order: [['created_at', 'DESC']],
-                    transaction
-                });
+                const recentEntry = await this.findOne(
+                    { company_id: data.company_id },
+                    [['created_at', 'DESC']]
+                );
 
                 const previousBalance = recentEntry ? recentEntry.balance : 0;
 
@@ -66,7 +65,7 @@ class CashLedgerService extends BaseService {
 
                 const cashLedger = await CashLedger.create({
                     company_id: data.company_id,
-                    reference_id: data.reference_id,
+                    reference_id: data.transaction_id,
                     date: data.date,
                     description: data.description,
                     transaction_id: uniqueTransactionId,
@@ -74,7 +73,7 @@ class CashLedgerService extends BaseService {
                     credit: data.credit,
                     debit: data.debit,
                     balance: newBalance
-                }, { transaction });
+                }, transaction );
 
                 return cashLedger;
             } catch (error) {
@@ -82,6 +81,42 @@ class CashLedgerService extends BaseService {
                 throw new InternalServerError('Error creating cash ledger');
             }
         });
+    }
+
+
+    updateCashLedger = async (id, data, transaction) => {
+
+        const recentEntry = await this.findOne({ company_id: data.company_id }, [['created_at', 'desc']]);
+
+        const previousBalance = recentEntry ? recentEntry.balance : 0;
+
+        let newBalance = 0;
+
+        if (data.debit > 0) {
+            newBalance = previousBalance - data.debit;
+        } else {
+            newBalance = previousBalance + data.credit;
+        }
+
+        const cashLedger = await this.model.update(
+            {
+                company_id: data.company_id,
+                date: data.date,
+                reference_id: data.reference_id,
+                description: data.description,
+                transaction_id: data.transaction_id,
+                payment_mode: data.payment_mode,
+                credit: data.credit,
+                debit: data.debit,
+                balance: newBalance
+            },
+            {
+                where: { id: data.id }, // The correct placement of the 'where' clause
+                transaction // Pass the transaction object within the options
+            }
+        );
+
+        return cashLedger;
     }
 }
 

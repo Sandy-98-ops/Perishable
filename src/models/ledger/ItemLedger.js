@@ -45,6 +45,14 @@ ItemLedger.init({
     quantity: {
         type: DataTypes.DECIMAL,
     },
+    created_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
+    updated_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
 }, {
     sequelize,
     modelName: 'ItemLedger',

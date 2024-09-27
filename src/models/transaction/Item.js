@@ -55,12 +55,20 @@ Item.init({
         type: DataTypes.STRING,
         allowNull: true, // Set to true if this is optional
     },
+    created_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
+    updated_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    }
 }, {
     sequelize,
     modelName: 'Item',
     tableName: 'items', // Use plural and underscore for table name
-    timestamps: true, // Ensure timestamps are enabled
-    underscored: true, // Use snake_case for column names
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
 });
 
 export default Item;

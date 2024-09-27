@@ -1,14 +1,16 @@
-import { DataTypes, Model } from 'sequelize';
-import sequelize from '../../config/db.js';
-import PAYMENT_MODES from '../../constants/paymentModes.js'; // Ensure this is an array of strings
+import { DataTypes } from 'sequelize';
+import sequelize from '../../config/db.js';    //Import it properly
+import BaseModel from '../base/BaseModel.js';
 import Company from '../company/Company.js';
 import Party from '../party/Party.js';
 import LedgerMaster from './LedgerMaster.js';
-import BaseModel from '../base/BaseModel.js';
+import PAYMENT_MODES from '../../constants/paymentModes.js';
 
 class Ledger extends BaseModel { }
 
 Ledger.init({
+    //Other Fields
+
     company_id: {
         type: DataTypes.INTEGER,
         allowNull: true,
@@ -47,7 +49,7 @@ Ledger.init({
     },
     payment_mode: {
         type: DataTypes.STRING,
-        allowNull: true,
+        allowNull: false,
         validate: {
             isIn: [PAYMENT_MODES],
         },
@@ -64,10 +66,19 @@ Ledger.init({
         type: DataTypes.FLOAT,
         defaultValue: 0,
     },
+    created_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
+    updated_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    }
 }, {
     sequelize,
-    modelName: 'Ledger',
-    timestamps: true,
+    tableName: 'ledgers', // Ensure this matches your actual table name
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
 });
 
 export default Ledger;

@@ -59,10 +59,19 @@ EmployeeAdvance.init({
         type: DataTypes.STRING,
         allowNull: true,
     },
+    created_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
+    updated_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
 }, {
     sequelize,
     modelName: 'Employee_Advance',
-    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
 });
 
 // Define associations

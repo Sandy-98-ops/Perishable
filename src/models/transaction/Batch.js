@@ -32,12 +32,20 @@ Batch.init({
         type: DataTypes.DECIMAL,
         defaultValue: 0.0,
     },
+    created_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
+    updated_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    }
 }, {
     sequelize,
     modelName: 'Batch',
     tableName: 'batches', // Use plural and underscore for table name
-    timestamps: true, // Ensure timestamps are enabled
-    underscored: true, // Use snake_case for column names
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
 });
 
 export default Batch;
