@@ -16,7 +16,7 @@ Company.init({
     },
     first_name: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
     },
     email: {
         type: DataTypes.STRING,
@@ -30,7 +30,7 @@ Company.init({
     },
     company_name: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
     },
     gst_no: {
         type: DataTypes.STRING,
@@ -58,7 +58,7 @@ Company.init({
     },
     password: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
     },
     image: {
         type: DataTypes.STRING,

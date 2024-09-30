@@ -17,6 +17,7 @@ class CompanyService extends BaseService {
 
     // Override create method to add extra logic
     createCompany = async (data) => {
+        console.log("Entered")
         return withTransaction(async (transaction) => {
             // Check if company with the same phone number already exists
             const existingCompany = await this.findOne({ phone_no: data.phone_no }, [], false);

@@ -12,14 +12,19 @@ class CompanyController extends BaseController {
             }
 
             if (!req.body.phone_no) {
-                throw new BadRequestError('Please enter Phone Number')
+                throw new BadRequestError('Please enter Phone Number');
             }
 
             const document = await CompanyService.createCompany(req.body);
-            this.handleSuccess(res, 201, document); // Use the handleSuccess method for successful responses
+
+            // Success response with data and message
+            return this.handleSuccess(res, 200, {
+                data: document, // Set the created document as data
+                message: 'Company created successfully', // Set a success message
+            });
         } catch (error) {
             console.error('Error creating company:', error);
-            this.handleError(res, error); // Use the handleError method for error handling
+            this.handleError(res, error); // Handle the error appropriately
         }
     };
 
